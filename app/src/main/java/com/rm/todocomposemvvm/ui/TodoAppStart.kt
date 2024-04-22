@@ -5,7 +5,9 @@ import com.rm.todocomposemvvm.ui.navigation.AppNavGraph
 import com.rm.todocomposemvvm.ui.viewmodel.TodoTaskViewModel
 
 @Composable
-fun TodoAppStart(viewModel: TodoTaskViewModel) {
+fun TodoAppStart(
+    viewModel: TodoTaskViewModel
+) {
 
-    AppNavGraph(viewModel = viewModel)
+    AppNavGraph(viewModel)
 }

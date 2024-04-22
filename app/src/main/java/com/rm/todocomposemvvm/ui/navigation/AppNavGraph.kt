@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -12,16 +13,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.rm.todocomposemvvm.data.room.entity.TodoTask
 import com.rm.todocomposemvvm.ui.common.AppConstants
 import com.rm.todocomposemvvm.ui.common.TaskOperation
 import com.rm.todocomposemvvm.ui.screens.list.ListScreen
 import com.rm.todocomposemvvm.ui.screens.task.TaskScreen
-import com.rm.todocomposemvvm.ui.viewmodel.TaskUiState
 import com.rm.todocomposemvvm.ui.viewmodel.TodoTaskViewModel
 
 @Composable
-fun AppNavGraph(viewModel: TodoTaskViewModel) {
+fun AppNavGraph(
+    viewModel: TodoTaskViewModel
+) {
 
     val navController: NavHostController = rememberNavController()
 
@@ -86,7 +87,6 @@ private fun NavGraphBuilder.addTaskComposable(
                 viewModel.getClickedTask(index)
             }
         }
-
 
         TaskScreen(
             viewModel = viewModel,
