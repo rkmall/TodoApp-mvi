@@ -1,10 +1,10 @@
-package com.rm.todocomposemvvm.data.di
+package com.rm.todocomposemvvm.di
 
 import android.content.Context
 import com.rm.todocomposemvvm.data.repository.TodoTaskRepositoryImpl
 import com.rm.todocomposemvvm.data.room.AppDatabase
 import com.rm.todocomposemvvm.data.room.TodoTaskDao
-import com.rm.todocomposemvvm.domain.repository.TodoTaskRepository
+import com.rm.todocomposemvvm.data.repository.TodoTaskRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

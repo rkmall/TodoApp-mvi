@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
@@ -57,10 +58,6 @@ fun ListScreen(
     viewModel: TodoTaskViewModel,
     navigateToTaskScreen: (taskId: Int) -> Unit
 ) {
-    LaunchedEffect(key1 = true) {
-        Log.d("todo:", "ListScreen LaunchedEffect called")
-        viewModel.getAllTasks()
-    }
 
     val tasks by viewModel.allTasks.collectAsState()
 
@@ -104,7 +101,23 @@ fun TodoListContent(
         contentPadding = PaddingValues(vertical = 4.dp), // padding before first and after last item
         verticalArrangement = Arrangement.spacedBy(4.dp) // space between each item
     ) {
-        items(
+
+        itemsIndexed(
+            items = tasks,
+            key = { index, task  -> task.id }
+        ) { index, task ->
+            task.run {
+                TodoListRowItem(
+                    id = id,
+                    title = title ,
+                    description = description ,
+                    color = priority.color,
+                    navigateToTaskScreen = { navigateToTaskScreen(index) }
+                )
+            }
+        }
+
+        /*items(
             items = tasks,
             key = { task -> task.id }
         ) {task ->
@@ -117,7 +130,7 @@ fun TodoListContent(
                     navigateToTaskScreen = navigateToTaskScreen
                 )
             }
-        }
+        }*/
     }
 }
 

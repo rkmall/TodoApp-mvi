@@ -33,7 +33,14 @@ fun PriorityItem(priority: Priority) {
     }
 }
 
-val defaultPriorityItemList = listOf(
+val taskPriorityItemList = listOf(
+    Priority.LOW,
+    Priority.MEDIUM,
+    Priority.HIGH
+)
+
+
+val sortPriorityItemList = listOf(
     Priority.LOW,
     Priority.HIGH,
     Priority.NONE

@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.ui.components.PriorityItem
-import com.rm.todocomposemvvm.ui.components.defaultPriorityItemList
+import com.rm.todocomposemvvm.ui.components.sortPriorityItemList
 import com.rm.todocomposemvvm.ui.theme.PaddingMedium
 import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
 import com.rm.todocomposemvvm.ui.viewmodel.SearchAppbarState
@@ -65,8 +65,8 @@ fun ListAppBar(
         else -> {
             SearchAppBar(
                 text = searchTextState,
-                onTextChange = { updatedText ->
-                    viewModel.searchTextState.value = updatedText
+                onTextChange = { userInput ->
+                    viewModel.searchTextState.value = userInput
                 },
                 onCloseClicked = {
                     viewModel.searchAppbarState.value = SearchAppbarState.CLOSED
@@ -196,7 +196,7 @@ fun SortAction(onSortClicked: (Priority) -> Unit) {
             expanded = expanded ,
             onDismissRequest = { expanded = false }
         ) {
-            defaultPriorityItemList.forEach { priority ->
+            sortPriorityItemList.forEach { priority ->
                 DropdownMenuItem(
                     text = { PriorityItem(priority = priority) },
                     onClick = {

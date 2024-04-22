@@ -2,11 +2,17 @@ package com.rm.todocomposemvvm.ui.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
-import com.rm.todocomposemvvm.domain.repository.TodoTaskRepository
+import com.rm.todocomposemvvm.data.repository.TodoTaskRepository
+import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,14 +29,25 @@ class TodoTaskViewModel @Inject constructor(
 ) : ViewModel() {
 
     val searchAppbarState: MutableState<SearchAppbarState> = mutableStateOf(SearchAppbarState.CLOSED)
+    val searchTextState: MutableState<String> = mutableStateOf(EMPTY_STRING)
 
-    val searchTextState: MutableState<String> = mutableStateOf("")
+    val id: MutableState<Int> = mutableIntStateOf(0)
+    val title: MutableState<String> = mutableStateOf(EMPTY_STRING)
+    val description: MutableState<String> = mutableStateOf(EMPTY_STRING)
+    val priority: MutableState<Priority> = mutableStateOf(Priority.LOW)
 
     private val _allTasks = MutableStateFlow<TaskUiState<List<TodoTask>>>(TaskUiState.Loading)
     val allTasks: StateFlow<TaskUiState<List<TodoTask>>> = _allTasks.asStateFlow()
 
     private val _selectedTask: MutableStateFlow<TodoTask?> = MutableStateFlow(null)
     val selectedTask: StateFlow<TodoTask?> = _selectedTask.asStateFlow()
+
+    private val _clickedTask: MutableStateFlow<TodoTask> = MutableStateFlow(TodoTask())
+    val clickedTask: StateFlow<TodoTask> = _clickedTask.asStateFlow()
+
+    init {
+        getAllTasks()
+    }
 
     fun getAllTasks() {
         _allTasks.value = TaskUiState.Loading
@@ -49,10 +66,19 @@ class TodoTaskViewModel @Inject constructor(
         }
     }
 
+    fun getClickedTask(index: Int) {
+        _clickedTask.value = (allTasks.value as TaskUiState.Success).data[index]
+    }
+
+    fun setClickedTask() {
+        _clickedTask.value = TodoTask()
+    }
+
     fun getSelectedTask(taskId: Int) {
         viewModelScope.launch {
             repository.getSelectedTask(taskId)
                 .collect { task ->
+                    Log.d("todo:", "$task")
                     _selectedTask.value = task
                 }
         }

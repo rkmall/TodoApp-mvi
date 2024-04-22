@@ -15,5 +15,8 @@
     <string name="go_back">Go Back</string>
     <string name="delete_task">Delete Task</string>
     <string name="update_task">Update Task</string>
+    <string name="title">Title</string>
+    <string name="prioritydropdownanimation">PriorityDropDownAnimation</string>
+    <string name="description">Description</string>
 
 </resources>

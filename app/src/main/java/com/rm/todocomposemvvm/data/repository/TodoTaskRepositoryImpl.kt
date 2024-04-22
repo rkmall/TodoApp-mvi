@@ -3,11 +3,11 @@ package com.rm.todocomposemvvm.data.repository
 import android.util.Log
 import com.rm.todocomposemvvm.data.room.TodoTaskDao
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
-import com.rm.todocomposemvvm.domain.repository.TodoTaskRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class TodoTaskRepositoryImpl @Inject constructor(private val todoTaskDao: TodoTaskDao) : TodoTaskRepository  {
+class TodoTaskRepositoryImpl @Inject constructor(private val todoTaskDao: TodoTaskDao) :
+    TodoTaskRepository {
 
     override fun getAllTodoTasks(): Flow<List<TodoTask>> {
         Log.d("todo:", "FETCHING ALL TASKS")

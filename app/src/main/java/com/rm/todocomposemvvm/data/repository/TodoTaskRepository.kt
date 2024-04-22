@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.domain.repository
+package com.rm.todocomposemvvm.data.repository
 
 import androidx.room.Delete
 import androidx.room.Insert

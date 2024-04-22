@@ -11,14 +11,12 @@ object Route {
 
 class AppNavigationActions(navController: NavController) {
 
-    // Nav action from Tasks screen to List screen with argument
     val navigateToListScreen: (TaskOperation) -> Unit = { operation ->
         navController.navigate("list/${operation.name}") {
             popUpTo(LIST_ROUTE) { inclusive = true }
         }
     }
 
-    // Nav action from List screen to Task screen with argument
     val navigateToTaskScreen: (taskId: Int) -> Unit = { taskId ->
         navController.navigate("task/$taskId")
     }
