@@ -11,9 +11,7 @@ object Route {
 class AppNavigationActions(navController: NavController) {
 
     val navigateToListScreen: () -> Unit = {
-        navController.navigate(HOME_ROUTE) {
-            popUpTo(HOME_ROUTE)
-        }
+        navController.popBackStack()
     }
 
     val navigateToTaskScreen: (taskId: Int) -> Unit = { taskId ->

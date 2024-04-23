@@ -1,6 +1,5 @@
 package com.rm.todocomposemvvm.ui.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -54,7 +53,7 @@ private fun NavGraphBuilder.addHomeComposable(
         HomeScreen(
             state = viewModel.viewState.value,
             effectFlow = viewModel.effect,
-            onEventSent = { event -> viewModel.setEvent(event)  },
+            onEventSent = { event -> viewModel.setEvent(event) },
             onNavigationRequested = { navigationEffect ->
                 if (navigationEffect is HomeContract.Effect.Navigation.ToTaskScreen) {
                     navigateToTaskScreen(navigationEffect.taskId)
@@ -69,23 +68,18 @@ private fun NavGraphBuilder.addTaskComposable(
 ) {
     composable(
         route = Route.TASK_ROUTE,
-        arguments = listOf(
-            navArgument(AppConstants.TASK_SCREEN_ARG_KEY) { type = NavType.IntType }
-        )
+        arguments = listOf(navArgument(AppConstants.TASK_SCREEN_ARG_KEY) { type = NavType.IntType })
     ) {navBackStackEntry ->
         val argument = requireNotNull( navBackStackEntry.arguments)
         val taskId = argument.getInt(AppConstants.TASK_SCREEN_ARG_KEY)
 
-        val viewModel = hiltViewModel<TaskViewModel>()
+        val viewModel: TaskViewModel = hiltViewModel()
 
         TaskScreen(
             state = viewModel.viewState.value,
             effectFlow = viewModel.effect,
             onEventSent = { event -> viewModel.setEvent(event) },
-            onNavigationFrom = {
-                Log.d("todo:", "viewModel called")
-                viewModel.getSelectedTask(taskId)
-            },
+            onNavigationFrom = { viewModel.getSelectedTask(taskId) },
             onNavigationRequested = { navigationEffect ->
                 if (navigationEffect is TaskDetailContract.Effect.Navigation.ToHomeScreen) {
                     navigateToListScreen()

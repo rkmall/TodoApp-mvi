@@ -18,8 +18,8 @@ interface ViewEvent
 /**
  * A [ViewSideEffect] flows from ViewModel to Composable.
  * It represents the side-effect that happens as a result of [ViewEvent].
- * It is commonly used for sending navigation updates to UI, show snackbars
- * and show other pieces of UI that is not tied to [ViewState].
+ * It is commonly used for sending navigation updates to UI, show snackbar
+ * or show other pieces of UI that is not tied to [ViewState].
  */
 interface ViewSideEffect
 
