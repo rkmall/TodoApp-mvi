@@ -9,6 +9,8 @@ interface ViewState
 /**
  * A [ViewEvent] flows from Composable to ViewModel.
  * When a user takes action via UI, [ViewEvent] represents the user's Intent.
+ * As a result of user action, it either results in the [ViewState] change
+ * or invokes [ViewSideEffect] to launch.
  * It is equivalent to ViewAction or MVI Intent.
  */
 interface ViewEvent

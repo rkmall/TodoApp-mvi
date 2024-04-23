@@ -31,8 +31,8 @@ abstract class BaseViewModel<UiState: ViewState, Event: ViewEvent, Effect: ViewS
 
     private fun subscribeToEvents() {
         viewModelScope.launch {
-            _event.collect {
-                handleEvents(it)
+            _event.collect { event ->
+                handleEvents(event)
             }
         }
     }

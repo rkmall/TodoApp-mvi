@@ -4,23 +4,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import com.rm.todocomposemvvm.ui.TodoAppStart
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.rm.todocomposemvvm.ui.features.home.HomeViewModel
+import com.rm.todocomposemvvm.ui.features.task.TaskViewModel
+import com.rm.todocomposemvvm.ui.navigation.AppNavGraph
 import com.rm.todocomposemvvm.ui.theme.TodoComposeMvvmTheme
-import com.rm.todocomposemvvm.ui.features.home.TodoTaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: TodoTaskViewModel by viewModels()
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         setContent {
             TodoComposeMvvmTheme {
-                TodoAppStart(viewModel)
+                AppNavGraph(viewModel = viewModel)
             }
         }
     }

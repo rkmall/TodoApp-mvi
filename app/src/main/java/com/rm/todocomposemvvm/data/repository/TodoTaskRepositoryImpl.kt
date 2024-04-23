@@ -15,7 +15,7 @@ class TodoTaskRepositoryImpl @Inject constructor(private val todoTaskDao: TodoTa
     }
 
     override fun getSelectedTask(taskId: Int): Flow<TodoTask> {
-        Log.d("todo:", "FETCHING SELECTED TASKS")
+        Log.d("todo:", "FETCHING SELECTED TASK")
         return todoTaskDao.getSelectedTask(taskId)
     }
 

@@ -53,7 +53,7 @@ fun HomeAppbar(
     if (searchAppBarStateOpen) {
         SearchAppbar(
             text = searchTextState,
-            onSearchTextInput = { userInput -> onSearchTextInput(userInput) },
+            onSearchTextInput = { onSearchTextInput(it) },
             onCloseClicked = {
                 searchAppBarStateOpen = false
                 onSearchTextInput(EMPTY_STRING)
@@ -148,9 +148,7 @@ fun SearchAppbar(
                 imeAction = ImeAction.Search
             ),
             keyboardActions = KeyboardActions(
-                onSearch = {
-                    onSearchClicked(text)
-                }
+                onSearch = { onSearchClicked(text) }
             )
         )
     }

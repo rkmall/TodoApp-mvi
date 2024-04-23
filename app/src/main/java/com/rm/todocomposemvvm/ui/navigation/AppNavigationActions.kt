@@ -1,19 +1,18 @@
 package com.rm.todocomposemvvm.ui.navigation
 
 import androidx.navigation.NavController
-import com.rm.todocomposemvvm.ui.features.common.TaskOperation
-import com.rm.todocomposemvvm.ui.navigation.Route.LIST_ROUTE
+import com.rm.todocomposemvvm.ui.navigation.Route.HOME_ROUTE
 
 object Route {
-    const val LIST_ROUTE = "list/{operation}"
+    const val HOME_ROUTE = "home"
     const val TASK_ROUTE = "task/{taskId}"
 }
 
 class AppNavigationActions(navController: NavController) {
 
-    val navigateToListScreen: (TaskOperation) -> Unit = { operation ->
-        navController.navigate("list/${operation.name}") {
-            popUpTo(LIST_ROUTE) { inclusive = true }
+    val navigateToListScreen: () -> Unit = {
+        navController.navigate(HOME_ROUTE) {
+            popUpTo(HOME_ROUTE)
         }
     }
 

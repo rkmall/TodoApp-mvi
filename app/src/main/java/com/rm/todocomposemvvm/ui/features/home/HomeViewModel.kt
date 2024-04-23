@@ -29,13 +29,17 @@ class HomeViewModel @Inject constructor(
                 HomeContract.Effect.Navigation.ToTaskScreen(taskId = event.taskId)
             }
             is HomeContract.Event.SearchTextInput -> setState {
-                copy(homeUiState = homeUiState.copy(appBarUiState = AppBarUiState(event.searchQuery)))
+                copy(homeUiState = homeUiState
+                    .copy(appBarUiState = homeUiState.appBarUiState
+                        .copy(searchText = event.searchQuery)
+                    )
+                )
             }
             else -> {}
         }
     }
 
-    fun getTodoTasks() {
+    private fun getTodoTasks() {
         viewModelScope.launch {
             setState { copy(isLoading = true, isError = false) }
 
