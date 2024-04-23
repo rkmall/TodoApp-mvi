@@ -1,7 +1,7 @@
 package com.rm.todocomposemvvm.ui.navigation
 
 import androidx.navigation.NavController
-import com.rm.todocomposemvvm.ui.common.TaskOperation
+import com.rm.todocomposemvvm.ui.features.common.TaskOperation
 import com.rm.todocomposemvvm.ui.navigation.Route.LIST_ROUTE
 
 object Route {

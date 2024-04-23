@@ -1,7 +1,6 @@
-package com.rm.todocomposemvvm.ui.screens.list
+package com.rm.todocomposemvvm.ui.features.home.composables
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
@@ -23,12 +21,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,50 +42,71 @@ import androidx.compose.ui.unit.dp
 import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
+import com.rm.todocomposemvvm.ui.base.SIDE_EFFECTS_KEY
+import com.rm.todocomposemvvm.ui.features.common.Progress
 import com.rm.todocomposemvvm.ui.theme.PaddingLarge
 import com.rm.todocomposemvvm.ui.theme.PriorityIndicatorSize
 import com.rm.todocomposemvvm.ui.theme.Purple80
 import com.rm.todocomposemvvm.ui.theme.RowItemElevation
 import com.rm.todocomposemvvm.ui.theme.rowItemRowBackGroundColor
 import com.rm.todocomposemvvm.ui.theme.rowItemTextColor
-import com.rm.todocomposemvvm.ui.viewmodel.SearchAppbarState
-import com.rm.todocomposemvvm.ui.viewmodel.TaskUiState
-import com.rm.todocomposemvvm.ui.viewmodel.TodoTaskViewModel
+import com.rm.todocomposemvvm.ui.features.home.HomeContract
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ListScreen(
-    viewModel: TodoTaskViewModel,
-    navigateToTaskScreen: (taskId: Int) -> Unit
+fun HomeScreen(
+    state: HomeContract.State,
+    effectFlow: Flow<HomeContract.Effect>?,
+    onEventSent: (event: HomeContract.Event) -> Unit,
+    onNavigationRequested: (navigationEffect: HomeContract.Effect.Navigation) -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    val tasks by viewModel.allTasks.collectAsState()
+    val snackBarMessage = stringResource(R.string.todo_tasks_lis_loaded_snackbar_messages)
 
-    val searchAppBarState: SearchAppbarState by viewModel.searchAppbarState
+    LaunchedEffect(SIDE_EFFECTS_KEY) {
+        effectFlow?.onEach { effect ->
+            when (effect) {
+                is HomeContract.Effect.DataWasLoaded -> {
+                    snackbarHostState.showSnackbar(
+                        message = snackBarMessage,
+                        duration = SnackbarDuration.Short
+                    )
+                }
+                is HomeContract.Effect.Navigation.ToTaskScreen -> onNavigationRequested(effect)
+            }
+        }?.collect()
+    }
 
-    val searchTextState: String by viewModel.searchTextState
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            ListAppBar(
-                viewModel = viewModel,
-                searchAppBarState,
-                searchTextState
+            HomeAppbar(
+                searchTextState = state.homeUiState.appBarUiState.searchText,
+                onSortClicked = {},
+                onDeleteClicked = {},
+                onSearchClicked = {},
+                onSearchTextInput = { onEventSent(HomeContract.Event.SearchTextInput(it)) }
             )
         },
         floatingActionButton = {
-            ListFab(navigateToTaskScreen = navigateToTaskScreen)
+            ListFab(navigateToTaskScreen = { onEventSent(HomeContract.Event.TaskItemClicked(-1)) })
         }
     ) { innerPaddings ->
-        when (tasks) {
-            is TaskUiState.Success -> {
+        when {
+            state.isLoading -> Progress()
+            state.isError -> TodoListEmptyContent()
+            else -> {
                 TodoListContent(
                     scaffoldPaddingValues = innerPaddings,
-                    tasks = (tasks as TaskUiState.Success<List<TodoTask>>).data,
-                    navigateToTaskScreen = navigateToTaskScreen
+                    tasks = state.homeUiState.tasks,
+                    navigateToTaskScreen = { onEventSent(HomeContract.Event.TaskItemClicked(it)) }
                 )
             }
-            else -> TodoListEmptyContent()
         }
     }
 }
@@ -101,23 +122,7 @@ fun TodoListContent(
         contentPadding = PaddingValues(vertical = 4.dp), // padding before first and after last item
         verticalArrangement = Arrangement.spacedBy(4.dp) // space between each item
     ) {
-
-        itemsIndexed(
-            items = tasks,
-            key = { index, task  -> task.id }
-        ) { index, task ->
-            task.run {
-                TodoListRowItem(
-                    id = id,
-                    title = title ,
-                    description = description ,
-                    color = priority.color,
-                    navigateToTaskScreen = { navigateToTaskScreen(index) }
-                )
-            }
-        }
-
-        /*items(
+        items(
             items = tasks,
             key = { task -> task.id }
         ) {task ->
@@ -128,6 +133,21 @@ fun TodoListContent(
                     description = description ,
                     color = priority.color,
                     navigateToTaskScreen = navigateToTaskScreen
+                )
+            }
+        }
+
+        /*itemsIndexed(
+            items = tasks,
+            key = { index, task  -> task.id }
+        ) { index, task ->
+            task.run {
+                TodoListRowItem(
+                    id = id,
+                    title = title ,
+                    description = description ,
+                    color = priority.color,
+                    navigateToTaskScreen = { navigateToTaskScreen(index) }
                 )
             }
         }*/

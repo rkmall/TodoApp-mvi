@@ -9,7 +9,7 @@ import javax.inject.Inject
 class TodoTaskRepositoryImpl @Inject constructor(private val todoTaskDao: TodoTaskDao) :
     TodoTaskRepository {
 
-    override fun getAllTodoTasks(): Flow<List<TodoTask>> {
+    override fun getTodoTasks(): Flow<List<TodoTask>> {
         Log.d("todo:", "FETCHING ALL TASKS")
         return todoTaskDao.getAllTodoTasks()
     }

@@ -2,7 +2,7 @@ package com.rm.todocomposemvvm.ui
 
 import androidx.compose.runtime.Composable
 import com.rm.todocomposemvvm.ui.navigation.AppNavGraph
-import com.rm.todocomposemvvm.ui.viewmodel.TodoTaskViewModel
+import com.rm.todocomposemvvm.ui.features.home.TodoTaskViewModel
 
 @Composable
 fun TodoAppStart(

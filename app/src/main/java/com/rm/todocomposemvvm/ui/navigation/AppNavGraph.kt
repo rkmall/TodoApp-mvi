@@ -13,15 +13,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.rm.todocomposemvvm.ui.common.AppConstants
-import com.rm.todocomposemvvm.ui.common.TaskOperation
-import com.rm.todocomposemvvm.ui.screens.list.ListScreen
-import com.rm.todocomposemvvm.ui.screens.task.TaskScreen
-import com.rm.todocomposemvvm.ui.viewmodel.TodoTaskViewModel
+import com.rm.todocomposemvvm.ui.features.common.TaskOperation
+import com.rm.todocomposemvvm.ui.features.home.HomeViewModel
+import com.rm.todocomposemvvm.ui.features.home.TodoTaskViewModel
+import com.rm.todocomposemvvm.ui.features.home.HomeContract
+import com.rm.todocomposemvvm.ui.features.home.composables.HomeScreen
+import com.rm.todocomposemvvm.ui.features.task.composables.TaskScreen
+import com.rm.todocomposemvvm.ui.utils.AppConstants
 
 @Composable
 fun AppNavGraph(
-    viewModel: TodoTaskViewModel
+    viewModel: TodoTaskViewModel,
+    //viewModel1: TaskListViewModel
 ) {
 
     val navController: NavHostController = rememberNavController()
@@ -36,7 +39,7 @@ fun AppNavGraph(
     ) {
 
         addListComposable(
-            viewModel = viewModel,
+            //viewModel = viewModel1,
             navigateToTaskScreen = navigationActions.navigateToTaskScreen
         )
 
@@ -48,7 +51,7 @@ fun AppNavGraph(
 }
 
 private fun NavGraphBuilder.addListComposable(
-    viewModel: TodoTaskViewModel,
+    //viewModel: TaskListViewModel,
     navigateToTaskScreen: (taskId: Int) -> Unit = {}
 ) {
     composable(
@@ -57,9 +60,18 @@ private fun NavGraphBuilder.addListComposable(
             type = NavType.StringType
         })
     ) {
-        ListScreen(
-            viewModel = viewModel,
-            navigateToTaskScreen = navigateToTaskScreen
+
+        val viewModel: HomeViewModel = hiltViewModel()
+
+        HomeScreen(
+            state = viewModel.viewState.value,
+            effectFlow = viewModel.effect,
+            onEventSent = { event -> viewModel.setEvent(event)  },
+            onNavigationRequested = { navigationEffect ->
+                if (navigationEffect is HomeContract.Effect.Navigation.ToTaskScreen) {
+                    navigateToTaskScreen(navigationEffect.taskId)
+                }
+            }
         )
     }
 }
@@ -75,6 +87,9 @@ private fun NavGraphBuilder.addTaskComposable(
         )
     ) {navBackStackEntry ->
         val index = navBackStackEntry.arguments!!.getInt(AppConstants.TASK_SCREEN_ARG_KEY)
+
+
+
 
 
         val selectedTask by viewModel.clickedTask.collectAsState()

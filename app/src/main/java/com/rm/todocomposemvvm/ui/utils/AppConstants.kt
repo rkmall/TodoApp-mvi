@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.common
+package com.rm.todocomposemvvm.ui.utils
 
 object AppConstants {
 

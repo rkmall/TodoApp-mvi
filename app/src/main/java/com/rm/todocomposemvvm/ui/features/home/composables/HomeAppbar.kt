@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.screens.list
+package com.rm.todocomposemvvm.ui.features.home.composables
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,58 +39,45 @@ import com.rm.todocomposemvvm.ui.components.PriorityItem
 import com.rm.todocomposemvvm.ui.components.sortPriorityItemList
 import com.rm.todocomposemvvm.ui.theme.PaddingMedium
 import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
-import com.rm.todocomposemvvm.ui.viewmodel.SearchAppbarState
-import com.rm.todocomposemvvm.ui.viewmodel.TodoTaskViewModel
 
 @Composable
-fun ListAppBar(
-    viewModel: TodoTaskViewModel,
-    searchAppbarState: SearchAppbarState,
+fun HomeAppbar(
     searchTextState: String,
+    onSortClicked: (Priority) -> Unit,
+    onDeleteClicked: () -> Unit,
+    onSearchClicked: (searchString: String) -> Unit,
+    onSearchTextInput: (String) -> Unit
 ) {
-    when (searchAppbarState) {
-        SearchAppbarState.CLOSED -> {
-            DefaultAppBar(
-                onSearchClicked = {
-                    viewModel.searchAppbarState.value = SearchAppbarState.OPENED
-                },
-                onSortClicked = {
+    var searchAppBarStateOpen by remember { mutableStateOf(false) }
 
-                },
-                onDeleteClicked = {
-
-                }
-            )
-        }
-        else -> {
-            SearchAppBar(
-                text = searchTextState,
-                onTextChange = { userInput ->
-                    viewModel.searchTextState.value = userInput
-                },
-                onCloseClicked = {
-                    viewModel.searchAppbarState.value = SearchAppbarState.CLOSED
-                    viewModel.searchTextState.value = EMPTY_STRING
-                },
-                onSearchClicked = {
-
-                }
-            )
-        }
+    if (searchAppBarStateOpen) {
+        SearchAppbar(
+            text = searchTextState,
+            onSearchTextInput = { userInput -> onSearchTextInput(userInput) },
+            onCloseClicked = {
+                searchAppBarStateOpen = false
+                onSearchTextInput(EMPTY_STRING)
+            },
+            onSearchClicked = { onSearchClicked(it) }
+        )
+    } else {
+        HomeAppbar(
+            onSearchClicked = { searchAppBarStateOpen = true },
+            onSortClicked = { onSortClicked(it) },
+            onDeleteClicked = { onDeleteClicked() }
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DefaultAppBar(
+fun HomeAppbar(
     onSearchClicked: () -> Unit,
     onSortClicked: (Priority) -> Unit,
     onDeleteClicked: () -> Unit
 ) {
     TopAppBar(
-        title = {
-            Text(text = stringResource(R.string.list_screen_title))
-        },
+        title = { Text(text = stringResource(R.string.list_screen_title)) },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.primary
@@ -104,9 +91,9 @@ fun DefaultAppBar(
 }
 
 @Composable
-fun SearchAppBar(
+fun SearchAppbar(
     text: String,
-    onTextChange: (String) -> Unit,
+    onSearchTextInput: (String) -> Unit,
     onCloseClicked: () -> Unit,
     onSearchClicked: (String) -> Unit
 ) {
@@ -121,7 +108,7 @@ fun SearchAppBar(
             modifier = Modifier
                 .fillMaxWidth(),
             value = text,
-            onValueChange = { onTextChange(it) },
+            onValueChange = { onSearchTextInput(it) },
             placeholder = {
                 Text(
                     text = stringResource(R.string.list_screen_searchbar_placeholder),
@@ -145,7 +132,7 @@ fun SearchAppBar(
             trailingIcon = {
                 IconButton(onClick = {
                         if (text.isNotEmpty()) {
-                            onTextChange(EMPTY_STRING)
+                            onSearchTextInput(EMPTY_STRING)
                         } else {
                             onCloseClicked()
                         }
@@ -243,7 +230,7 @@ fun DeleteAllAction(onDeleteClicked: () -> Unit) {
 @Preview
 @Composable
 private fun AppBarsPreview() {
-    DefaultAppBar(
+    HomeAppbar(
         onSearchClicked = {},
         onSortClicked = {},
         onDeleteClicked = {}
@@ -253,9 +240,9 @@ private fun AppBarsPreview() {
 @Preview
 @Composable
 private fun SearchBarsPreview() {
-    SearchAppBar(
+    SearchAppbar(
         text = "Search",
-        onTextChange = {} ,
+        onSearchTextInput = {} ,
         onCloseClicked = {},
         onSearchClicked = {}
     )

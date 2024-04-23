@@ -4,10 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.navigation.NavHostController
 import com.rm.todocomposemvvm.ui.TodoAppStart
 import com.rm.todocomposemvvm.ui.theme.TodoComposeMvvmTheme
-import com.rm.todocomposemvvm.ui.viewmodel.TodoTaskViewModel
+import com.rm.todocomposemvvm.ui.features.home.TodoTaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

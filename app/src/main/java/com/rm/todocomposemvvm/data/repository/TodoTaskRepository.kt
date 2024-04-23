@@ -1,16 +1,11 @@
 package com.rm.todocomposemvvm.data.repository
 
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
 import kotlinx.coroutines.flow.Flow
 
 interface TodoTaskRepository {
 
-    fun getAllTodoTasks(): Flow<List<TodoTask>>
+    fun getTodoTasks(): Flow<List<TodoTask>>
 
     fun getSelectedTask(taskId: Int): Flow<TodoTask>
 

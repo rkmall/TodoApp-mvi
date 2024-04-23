@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.screens.task
+package com.rm.todocomposemvvm.ui.features.task.composables
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
-import com.rm.todocomposemvvm.ui.common.TaskOperation
+import com.rm.todocomposemvvm.ui.features.common.TaskOperation
 
 @Composable
 fun TaskAppBar(

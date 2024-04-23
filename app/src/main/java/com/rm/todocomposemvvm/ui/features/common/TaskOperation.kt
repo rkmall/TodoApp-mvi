@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.common
+package com.rm.todocomposemvvm.ui.features.common
 
 enum class TaskOperation {
     ADD,

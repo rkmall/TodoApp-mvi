@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.viewmodel
+package com.rm.todocomposemvvm.ui.features.home
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
@@ -49,7 +49,7 @@ class TodoTaskViewModel @Inject constructor(
     fun getAllTasks() {
         _allTasks.value = TaskUiState.Loading
         viewModelScope.launch {
-            repository.getAllTodoTasks()
+            repository.getTodoTasks()
                 .map { tasks ->
                     TaskUiState.Success(tasks) as TaskUiState<List<TodoTask>>
                 }
