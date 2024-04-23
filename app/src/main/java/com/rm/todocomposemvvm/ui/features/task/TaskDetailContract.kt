@@ -12,7 +12,7 @@ class TaskDetailContract {
         data class AddIconClicked(val task: TodoTask): Event()
         data class UpdateIconClicked(val task: TodoTask): Event()
         data class DeleteIconClicked(val task: TodoTask): Event()
-        data object BackButtonClicked : Event()
+        data object BackIconClicked : Event()
         data class TitleTextInput(val title: String) : Event()
         data class DescriptionTextInput(val description: String) : Event()
         data class PrioritySelection(val priority: Priority) : Event()
@@ -26,7 +26,6 @@ class TaskDetailContract {
 
     sealed class Effect : ViewSideEffect {
         sealed class Navigation : Effect() {
-            data object FromListScreen : Navigation()
             data object ToHomeScreen : Navigation()
         }
     }

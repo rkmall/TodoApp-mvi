@@ -1,6 +1,5 @@
 package com.rm.todocomposemvvm.ui.features.home.composables
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,12 +32,16 @@ import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
 import com.rm.todocomposemvvm.ui.base.SIDE_EFFECTS_KEY
 import com.rm.todocomposemvvm.ui.features.common.Progress
+import com.rm.todocomposemvvm.ui.features.home.AppBarUiState
 import com.rm.todocomposemvvm.ui.features.home.HomeContract
+import com.rm.todocomposemvvm.ui.features.home.HomeUiState
+import com.rm.todocomposemvvm.ui.theme.PaddingExtraSmall
+import com.rm.todocomposemvvm.ui.utils.AppConstants.DEFAULT_TASK_ID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
     state: HomeContract.State,
@@ -48,7 +51,7 @@ fun HomeScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val snackBarMessage = stringResource(R.string.todo_tasks_lis_loaded_snackbar_messages)
+    val snackBarMessage = stringResource(R.string.tasks_list_loaded_snackbar_messages)
 
     LaunchedEffect(SIDE_EFFECTS_KEY) {
         effectFlow?.onEach { effect ->
@@ -68,25 +71,27 @@ fun HomeScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             HomeAppbar(
-                searchTextState = state.homeUiState.appBarUiState.searchText,
+                textInput = state.homeUiState.appBarUiState.searchText,
                 onSortClicked = {},
                 onDeleteClicked = {},
                 onSearchClicked = {},
-                onSearchTextInput = { onEventSent(HomeContract.Event.SearchTextInput(it)) }
+                onTextInput = { onEventSent(HomeContract.Event.SearchTextInput(it)) }
             )
         },
         floatingActionButton = {
-            HomeFab(navigateToTaskScreen = { taskId -> onEventSent(HomeContract.Event.TaskItemClicked(taskId)) })
+            HomeFab(onNavigateToTaskScreen = { onEventSent(HomeContract.Event.TaskItemClicked(it)) })
         }
     ) { innerPaddings ->
         when {
             state.isLoading -> Progress()
-            state.isError -> HomeListEmptyContent()
+            state.isError -> HomeEmptyContent(
+                onNavigateToTaskScreen = { onEventSent(HomeContract.Event.TaskItemClicked(it)) }
+            )
             else -> {
-                HomeListContent(
-                    scaffoldPaddingValues = innerPaddings,
+                HomeContent(
+                    modifier = Modifier.padding(innerPaddings),
                     tasks = state.homeUiState.tasks,
-                    navigateToTaskScreen = { taskId -> onEventSent(HomeContract.Event.TaskItemClicked(taskId)) }
+                    onNavigateToTaskScreen = { onEventSent(HomeContract.Event.TaskItemClicked(it)) }
                 )
             }
         }
@@ -94,15 +99,15 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeListContent(
-    scaffoldPaddingValues: PaddingValues,
+fun HomeContent(
+    modifier: Modifier = Modifier,
     tasks: List<TodoTask>,
-    navigateToTaskScreen: (taskId: Int) -> Unit
+    onNavigateToTaskScreen: (taskId: Int) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier.padding(scaffoldPaddingValues),
-        contentPadding = PaddingValues(vertical = 4.dp), // padding before first and after last item
-        verticalArrangement = Arrangement.spacedBy(4.dp) // space between each item
+        modifier = modifier,
+        contentPadding = PaddingValues(vertical = PaddingExtraSmall), // padding before first and after last item
+        verticalArrangement = Arrangement.spacedBy(PaddingExtraSmall) // space between each item
     ) {
         items(
             items = tasks,
@@ -114,7 +119,7 @@ fun HomeListContent(
                     title = title ,
                     description = description ,
                     color = priority.color,
-                    navigateToTaskScreen = navigateToTaskScreen
+                    onNavigateToTaskScreen = onNavigateToTaskScreen
                 )
             }
         }
@@ -122,7 +127,7 @@ fun HomeListContent(
 }
 
 @Composable
-fun HomeListEmptyContent() {
+fun HomeEmptyContent(onNavigateToTaskScreen: (taskId: Int) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -134,7 +139,7 @@ fun HomeListEmptyContent() {
             modifier = Modifier
                 .padding(10.dp)
                 .size(100.dp),
-            onClick = { /*TODO*/ },
+            onClick = { onNavigateToTaskScreen(DEFAULT_TASK_ID) },
         ) {
             Icon(
                 modifier = Modifier.size(100.dp),
@@ -153,15 +158,14 @@ fun HomeListEmptyContent() {
 
 @Preview
 @Composable
-private fun ListScreenPreview() {
-    HomeListContent(
-        scaffoldPaddingValues = PaddingValues(2.dp),
+private fun HomeContentPreview() {
+    HomeContent(
+        modifier = Modifier.padding(2.dp),
         tasks = listOf(
             TodoTask(
                 1,
                 "Cook food",
-                "This evening you need to cook yourself! Vegetables are already there, " +
-                        "cook meet if you want and get get pickles from the market",
+                "This evening you need to cook yourself! Vegetables are already there.",
                 Priority.LOW
             ),
             TodoTask(
@@ -177,12 +181,49 @@ private fun ListScreenPreview() {
                 Priority.MEDIUM
             )
         ),
-        navigateToTaskScreen = {}
+        onNavigateToTaskScreen = {}
     )
 }
 
 @Preview
 @Composable
-private fun TodoListEmptyContentPreview() {
-    HomeListEmptyContent()
+private fun HomeEmptyContentPreview() {
+    HomeEmptyContent(
+        onNavigateToTaskScreen = {}
+    )
 }
+
+@Preview
+@Composable
+private fun HomeScreenPreview() {
+    val homeUiState = HomeUiState(
+        tasks = listOf(
+            TodoTask(
+                1,
+                "Cook food",
+                "This evening you need to cook yourself! Vegetables are already there.",
+                Priority.LOW
+            ),
+            TodoTask(
+                2,
+                "Learn compose",
+                "Learn compose side-effects at 5 pm",
+                Priority.HIGH
+            ),
+            TodoTask(
+                3,
+                "Go running",
+                "Go for running in the park for at least 30 mins",
+                Priority.MEDIUM
+            )
+        ),
+        appBarUiState = AppBarUiState()
+    )
+    HomeScreen(
+        state = HomeContract.State(homeUiState, isLoading = false, isError = false),
+        effectFlow = flowOf(HomeContract.Effect.DataWasLoaded),
+        onEventSent = {} ,
+        onNavigationRequested = {}
+    )
+}
+

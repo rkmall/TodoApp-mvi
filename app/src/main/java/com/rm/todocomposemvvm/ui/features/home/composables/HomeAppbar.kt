@@ -42,26 +42,26 @@ import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
 
 @Composable
 fun HomeAppbar(
-    searchTextState: String,
+    textInput: String,
     onSortClicked: (Priority) -> Unit,
     onDeleteClicked: () -> Unit,
     onSearchClicked: (searchString: String) -> Unit,
-    onSearchTextInput: (String) -> Unit
+    onTextInput: (String) -> Unit
 ) {
     var searchAppBarStateOpen by remember { mutableStateOf(false) }
 
     if (searchAppBarStateOpen) {
         SearchAppbar(
-            text = searchTextState,
-            onSearchTextInput = { onSearchTextInput(it) },
+            textInput = textInput,
+            onTextInput = { onTextInput(it) },
             onCloseClicked = {
                 searchAppBarStateOpen = false
-                onSearchTextInput(EMPTY_STRING)
+                onTextInput(EMPTY_STRING)
             },
             onSearchClicked = { onSearchClicked(it) }
         )
     } else {
-        HomeAppbar(
+        MainHomeAppbar(
             onSearchClicked = { searchAppBarStateOpen = true },
             onSortClicked = { onSortClicked(it) },
             onDeleteClicked = { onDeleteClicked() }
@@ -71,7 +71,7 @@ fun HomeAppbar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeAppbar(
+fun MainHomeAppbar(
     onSearchClicked: () -> Unit,
     onSortClicked: (Priority) -> Unit,
     onDeleteClicked: () -> Unit
@@ -92,8 +92,8 @@ fun HomeAppbar(
 
 @Composable
 fun SearchAppbar(
-    text: String,
-    onSearchTextInput: (String) -> Unit,
+    textInput: String,
+    onTextInput: (String) -> Unit,
     onCloseClicked: () -> Unit,
     onSearchClicked: (String) -> Unit
 ) {
@@ -107,8 +107,8 @@ fun SearchAppbar(
         TextField(
             modifier = Modifier
                 .fillMaxWidth(),
-            value = text,
-            onValueChange = { onSearchTextInput(it) },
+            value = textInput,
+            onValueChange = { onTextInput(it) },
             placeholder = {
                 Text(
                     text = stringResource(R.string.list_screen_searchbar_placeholder),
@@ -131,8 +131,8 @@ fun SearchAppbar(
             },
             trailingIcon = {
                 IconButton(onClick = {
-                        if (text.isNotEmpty()) {
-                            onSearchTextInput(EMPTY_STRING)
+                        if (textInput.isNotEmpty()) {
+                            onTextInput(EMPTY_STRING)
                         } else {
                             onCloseClicked()
                         }
@@ -148,7 +148,7 @@ fun SearchAppbar(
                 imeAction = ImeAction.Search
             ),
             keyboardActions = KeyboardActions(
-                onSearch = { onSearchClicked(text) }
+                onSearch = { onSearchClicked(textInput) }
             )
         )
     }
@@ -228,7 +228,7 @@ fun DeleteAllAction(onDeleteClicked: () -> Unit) {
 @Preview
 @Composable
 private fun AppBarsPreview() {
-    HomeAppbar(
+    MainHomeAppbar(
         onSearchClicked = {},
         onSortClicked = {},
         onDeleteClicked = {}
@@ -239,8 +239,8 @@ private fun AppBarsPreview() {
 @Composable
 private fun SearchBarsPreview() {
     SearchAppbar(
-        text = "Search",
-        onSearchTextInput = {} ,
+        textInput = "Search",
+        onTextInput = {} ,
         onCloseClicked = {},
         onSearchClicked = {}
     )

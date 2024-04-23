@@ -18,8 +18,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.rm.todocomposemvvm.R
+import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
+import com.rm.todocomposemvvm.ui.utils.AppConstants.DEFAULT_TASK_ID
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskAppBar(
     selectedTask: TodoTask,
@@ -28,27 +31,9 @@ fun TaskAppBar(
     onDeleteClicked: (selectedTask: TodoTask) -> Unit,
     onBackClicked: () -> Unit,
 ) {
-    ExistingTaskAppBar(
-        selectedTask = selectedTask,
-        onUpdateClicked = onUpdateClicked,
-        onDeleteClicked = onDeleteClicked,
-        onAddClicked = onAddClicked,
-        onBackClicked = onBackClicked
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ExistingTaskAppBar(
-    selectedTask: TodoTask,
-    onUpdateClicked: (selectedTask: TodoTask) -> Unit,
-    onDeleteClicked: (selectedTask: TodoTask) -> Unit,
-    onAddClicked: (selectedTask: TodoTask) -> Unit,
-    onBackClicked: () -> Unit
-) {
     TopAppBar(
         title = {
-            if (selectedTask.id == 0) {
+            if (selectedTask.id == DEFAULT_TASK_ID) {
                 Text(text = stringResource(id = R.string.add_task))
             } else {
                 Text(
@@ -62,23 +47,21 @@ fun ExistingTaskAppBar(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.primary
         ),
-        navigationIcon = {
-            BackAction(onBackClicked = onBackClicked)
-        },
+        navigationIcon = { BackActionIcon(onBackClicked = onBackClicked) },
         actions = {
-            if (selectedTask.id == 0) {
-                AddAction(
+            if (selectedTask.id == DEFAULT_TASK_ID) {
+                AddActionIcon(
                     selectedTask = selectedTask,
-                    onAddClicked = { onAddClicked(it) },
+                    onAddClicked = onAddClicked,
                     onBackClicked = onBackClicked
                 )
             } else {
-                DeleteAction(
+                DeleteActionIcon(
                     selectedTask = selectedTask,
                     onDeleteClicked = onDeleteClicked,
                     onBackClicked = onBackClicked
                 )
-                UpdateAction(
+                UpdateActionIcon(
                     selectedTask = selectedTask,
                     onUpdateClicked = onUpdateClicked
                 )
@@ -87,36 +70,8 @@ fun ExistingTaskAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewTaskAppBar(
-    selectedTask: TodoTask,
-    onAddClicked: (selectedTask: TodoTask) -> Unit,
-    onBackClicked: () -> Unit
-) {
-    TopAppBar(
-        title = {
-            Text(text = stringResource(id = R.string.add_task))
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.primary
-        ),
-        navigationIcon = {
-            BackAction(onBackClicked = onBackClicked)
-        },
-        actions = {
-            AddAction(
-                selectedTask = selectedTask,
-                onAddClicked = onAddClicked,
-                onBackClicked = onBackClicked
-            )
-        }
-    )
-}
-
-@Composable
-fun BackAction(onBackClicked: () -> Unit) {
+fun BackActionIcon(onBackClicked: () -> Unit) {
     IconButton(onClick = { onBackClicked() }) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -127,7 +82,7 @@ fun BackAction(onBackClicked: () -> Unit) {
 }
 
 @Composable
-fun AddAction(
+fun AddActionIcon(
     selectedTask: TodoTask,
     onAddClicked: (selectedTask: TodoTask) -> Unit,
     onBackClicked: () -> Unit
@@ -147,7 +102,7 @@ fun AddAction(
 }
 
 @Composable
-fun DeleteAction(
+fun DeleteActionIcon(
     selectedTask: TodoTask,
     onDeleteClicked: (selectedTask: TodoTask) -> Unit,
     onBackClicked: () -> Unit
@@ -167,11 +122,12 @@ fun DeleteAction(
 }
 
 @Composable
-fun UpdateAction(
+fun UpdateActionIcon(
     selectedTask: TodoTask,
     onUpdateClicked: (selectedTask: TodoTask) -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+
     IconButton(
         onClick = {
             keyboardController?.hide()
@@ -189,5 +145,11 @@ fun UpdateAction(
 @Preview
 @Composable
 fun TaskAppBarPreview() {
-    //TaskAppBar {}
+    TaskAppBar(
+        selectedTask = TodoTask(1, "Go running", "Running at 6 PM", Priority.LOW),
+        onAddClicked = {},
+        onUpdateClicked = {},
+        onDeleteClicked = {},
+        onBackClicked = {}
+    )
 }

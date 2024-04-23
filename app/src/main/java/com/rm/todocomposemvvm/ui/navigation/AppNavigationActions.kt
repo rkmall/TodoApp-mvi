@@ -10,11 +10,11 @@ object Route {
 
 class AppNavigationActions(navController: NavController) {
 
-    val navigateToListScreen: () -> Unit = {
-        navController.popBackStack()
+    val onNavigateToHomeScreen: () -> Unit = {
+        navController.popBackStack(HOME_ROUTE, false)
     }
 
-    val navigateToTaskScreen: (taskId: Int) -> Unit = { taskId ->
+    val onNavigateToTaskScreen: (taskId: Int) -> Unit = { taskId ->
         navController.navigate("task/$taskId")
     }
 }

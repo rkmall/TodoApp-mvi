@@ -31,13 +31,13 @@ fun HomeListItem(
     title: String,
     description: String,
     color: Color,
-    navigateToTaskScreen: (taskId: Int) -> Unit
+    onNavigateToTaskScreen: (taskId: Int) -> Unit
 ) {
     Surface(
         color = MaterialTheme.colorScheme.rowItemRowBackGroundColor,
         shape = RectangleShape,
         tonalElevation = RowItemElevation,
-        onClick = { navigateToTaskScreen(id) }
+        onClick = { onNavigateToTaskScreen(id) }
     ) {
         Column(
             modifier = Modifier

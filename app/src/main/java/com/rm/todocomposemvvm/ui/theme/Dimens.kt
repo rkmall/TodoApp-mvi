@@ -7,6 +7,8 @@ val PaddingExtraSmall = 4.dp
 val PaddingSmall = 6.dp
 val PaddingMedium = 12.dp
 val PaddingLarge = 16.dp
+val PaddingExtraLarge = 20.dp
+val PaddingXXLarge = 30.dp
 
 val DividerThickness = 1.dp
 

@@ -5,13 +5,17 @@ import androidx.lifecycle.viewModelScope
 import com.rm.todocomposemvvm.data.repository.TodoTaskRepository
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
 import com.rm.todocomposemvvm.ui.base.BaseViewModel
+import com.rm.todocomposemvvm.ui.utils.AppConstants.DEFAULT_TASK_ID
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class TaskViewModel @Inject constructor (
+@HiltViewModel(assistedFactory = TaskViewModel.TaskViewModelFactory::class)
+class TaskViewModel @AssistedInject constructor (
+    @Assisted val taskId: Int,
     val repository: TodoTaskRepository
 ) : BaseViewModel<TaskDetailContract.State, TaskDetailContract.Event, TaskDetailContract.Effect>() {
 
@@ -22,7 +26,7 @@ class TaskViewModel @Inject constructor (
     )
 
     init {
-        setEffect { TaskDetailContract.Effect.Navigation.FromListScreen }
+        getSelectedTask()
     }
 
     override fun handleEvents(event: TaskDetailContract.Event) {
@@ -33,7 +37,7 @@ class TaskViewModel @Inject constructor (
 
             is TaskDetailContract.Event.DeleteIconClicked -> deleteTask(event.task)
 
-            is TaskDetailContract.Event.BackButtonClicked -> setEffect {
+            is TaskDetailContract.Event.BackIconClicked -> setEffect {
                 TaskDetailContract.Effect.Navigation.ToHomeScreen
             }
 
@@ -51,9 +55,9 @@ class TaskViewModel @Inject constructor (
         }
     }
 
-    fun getSelectedTask(taskId: Int) {
+    fun getSelectedTask() {
         Log.d("todo:", "getSelectedTask called")
-        if (taskId > -1) {
+        if (taskId > DEFAULT_TASK_ID) {
             viewModelScope.launch {
                 setState { copy(isLoading = true, isError = false) }
 
@@ -86,5 +90,10 @@ class TaskViewModel @Inject constructor (
         viewModelScope.launch {
             repository.deleteTodoTask(task)
         }
+    }
+
+    @AssistedFactory
+    interface TaskViewModelFactory {
+        fun create(taskId: Int): TaskViewModel
     }
 }

@@ -14,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.data.room.entity.Priority
+import com.rm.todocomposemvvm.data.room.entity.TodoTask
 import com.rm.todocomposemvvm.ui.base.SIDE_EFFECTS_KEY
 import com.rm.todocomposemvvm.ui.features.common.Progress
 import com.rm.todocomposemvvm.ui.features.task.TaskDetailContract
@@ -24,6 +26,7 @@ import com.rm.todocomposemvvm.ui.theme.PaddingMedium
 import com.rm.todocomposemvvm.ui.theme.PaddingSmall
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
 
 @Composable
@@ -31,13 +34,11 @@ fun TaskScreen(
     state: TaskDetailContract.State,
     effectFlow: Flow<TaskDetailContract.Effect>?,
     onEventSent: (event: TaskDetailContract.Event) -> Unit,
-    onNavigationFrom: () -> Unit,
     onNavigationRequested: (TaskDetailContract.Effect.Navigation) -> Unit
 ) {
     LaunchedEffect(key1 = SIDE_EFFECTS_KEY) {
         effectFlow?.onEach { effect ->
             when (effect) {
-                is TaskDetailContract.Effect.Navigation.FromListScreen -> onNavigationFrom()
                 is TaskDetailContract.Effect.Navigation.ToHomeScreen -> onNavigationRequested(effect)
             }
         }?.collect()
@@ -51,7 +52,7 @@ fun TaskScreen(
                     onAddClicked = { onEventSent(TaskDetailContract.Event.AddIconClicked(it)) },
                     onUpdateClicked = { onEventSent(TaskDetailContract.Event.UpdateIconClicked(it)) },
                     onDeleteClicked = { onEventSent(TaskDetailContract.Event.DeleteIconClicked(it)) },
-                    onBackClicked = { onEventSent(TaskDetailContract.Event.BackButtonClicked) },
+                    onBackClicked = { onEventSent(TaskDetailContract.Event.BackIconClicked) },
                 )
             }
         }
@@ -119,4 +120,19 @@ fun TaskContent(
             textStyle = MaterialTheme.typography.bodyLarge
         )
     }
+}
+
+@Preview
+@Composable
+fun TaskScreenPreview() {
+    TaskScreen(
+        state = TaskDetailContract.State(
+            task = TodoTask(1, "My Task", "Task description", Priority.LOW),
+            isLoading = false,
+            isError = false
+        ) ,
+        effectFlow = flowOf(TaskDetailContract.Effect.Navigation.ToHomeScreen) ,
+        onEventSent = {},
+        onNavigationRequested = {}
+    )
 }

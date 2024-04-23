@@ -9,11 +9,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.ui.theme.Purple80
+import com.rm.todocomposemvvm.ui.utils.AppConstants.DEFAULT_TASK_ID
 
 @Composable
-fun HomeFab(navigateToTaskScreen: (taskId: Int) -> Unit) {
+fun HomeFab(onNavigateToTaskScreen: (taskId: Int) -> Unit) {
     FloatingActionButton(
-        onClick = { navigateToTaskScreen(-1) },
+        onClick = { onNavigateToTaskScreen(DEFAULT_TASK_ID) },
         containerColor = Purple80
     ) {
         Icon(
