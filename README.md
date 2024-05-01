@@ -1,8 +1,8 @@
-## About
+# About
 
 A sample project using Compose and the implemenation of MVI (Model-View-Intent).
 
-# Description
+## Description
 
 * UI
     - [Compose](https://developer.android.com/jetpack/compose) declarative UI framework.
