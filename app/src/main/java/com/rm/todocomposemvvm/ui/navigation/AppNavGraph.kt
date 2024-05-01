@@ -55,7 +55,7 @@ private fun NavGraphBuilder.addHomeComposable(
         HomeScreen(
             state = viewModel.viewState.value,
             effectFlow = viewModel.effect,
-            onEventSent = { event -> viewModel.setEvent(event) },
+            onEventSent = { viewModel.setEvent(it) },
             onNavigationRequested = { navigationEffect ->
                 if (navigationEffect is HomeContract.Effect.Navigation.ToTaskScreen) {
                     onNavigateToTaskScreen(navigationEffect.taskId)

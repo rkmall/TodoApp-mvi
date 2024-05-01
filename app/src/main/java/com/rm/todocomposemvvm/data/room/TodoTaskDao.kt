@@ -9,7 +9,6 @@ import androidx.room.Update
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
 import kotlinx.coroutines.flow.Flow
 
-
 @Dao
 interface TodoTaskDao {
 

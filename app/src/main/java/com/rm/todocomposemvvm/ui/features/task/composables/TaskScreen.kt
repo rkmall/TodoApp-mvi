@@ -130,8 +130,8 @@ fun TaskScreenPreview() {
             task = TodoTask(1, "My Task", "Task description", Priority.LOW),
             isLoading = false,
             isError = false
-        ) ,
-        effectFlow = flowOf(TaskDetailContract.Effect.Navigation.ToHomeScreen) ,
+        ),
+        effectFlow = flowOf(TaskDetailContract.Effect.Navigation.ToHomeScreen),
         onEventSent = {},
         onNavigationRequested = {}
     )

@@ -56,7 +56,7 @@ fun HomeScreen(
     LaunchedEffect(SIDE_EFFECTS_KEY) {
         effectFlow?.onEach { effect ->
             when (effect) {
-                is HomeContract.Effect.DataWasLoaded -> {
+                is HomeContract.Effect.DataWasLoaded -> {  // This is causing snackbar to show on every task state change
                     snackbarHostState.showSnackbar(
                         message = snackBarMessage,
                         duration = SnackbarDuration.Short
@@ -85,7 +85,9 @@ fun HomeScreen(
         when {
             state.isLoading -> Progress()
             state.isError -> HomeEmptyContent(
-                onNavigateToTaskScreen = { onEventSent(HomeContract.Event.TaskItemClicked(it)) }
+                onNavigateToTaskScreen = {
+                    onEventSent(HomeContract.Event.TaskItemClicked(it))
+                }
             )
             else -> {
                 HomeContent(
@@ -226,4 +228,3 @@ private fun HomeScreenPreview() {
         onNavigationRequested = {}
     )
 }
-
