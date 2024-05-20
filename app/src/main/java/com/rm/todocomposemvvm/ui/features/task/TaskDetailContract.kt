@@ -12,7 +12,7 @@ class TaskDetailContract {
         data class AddIconClicked(val task: TodoTask): Event()
         data class UpdateIconClicked(val task: TodoTask): Event()
         data class DeleteIconClicked(val task: TodoTask): Event()
-        data object BackIconClicked : Event()
+        data class BackIconClicked(val message: String) : Event()
         data class TitleTextInput(val title: String) : Event()
         data class DescriptionTextInput(val description: String) : Event()
         data class PrioritySelection(val priority: Priority) : Event()
@@ -25,8 +25,11 @@ class TaskDetailContract {
     ) : ViewState
 
     sealed class Effect : ViewSideEffect {
+
+        data class ShowSnackBar(val message: String) : Effect()
+
         sealed class Navigation : Effect() {
-            data object ToHomeScreen : Navigation()
+            data class ToHomeScreen(val message: String) : Navigation()
         }
     }
 }

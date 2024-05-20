@@ -1,5 +1,6 @@
 package com.rm.todocomposemvvm.ui.features.home.composables
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,45 +33,47 @@ import androidx.compose.ui.unit.dp
 import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
-import com.rm.todocomposemvvm.ui.base.SIDE_EFFECTS_KEY
-import com.rm.todocomposemvvm.ui.features.common.Progress
+import com.rm.todocomposemvvm.ui.features.component.Progress
 import com.rm.todocomposemvvm.ui.features.home.AppBarUiState
 import com.rm.todocomposemvvm.ui.features.home.HomeContract
 import com.rm.todocomposemvvm.ui.features.home.HomeUiState
 import com.rm.todocomposemvvm.ui.theme.PaddingExtraSmall
 import com.rm.todocomposemvvm.ui.utils.AppConstants.DEFAULT_TASK_ID
+import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun HomeScreen(
     state: HomeContract.State,
     effectFlow: Flow<HomeContract.Effect>?,
     onEventSent: (event: HomeContract.Event) -> Unit,
+    snackBarMessage: String = EMPTY_STRING,
     onNavigationRequested: (navigationEffect: HomeContract.Effect.Navigation) -> Unit
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
+    Log.d("screen", "Home Screen Called")
+    val snackBarHostState = remember { SnackbarHostState() }
 
-    val snackBarMessage = stringResource(R.string.tasks_list_loaded_snackbar_messages)
+    val message by remember { mutableStateOf(snackBarMessage) }
 
-    LaunchedEffect(SIDE_EFFECTS_KEY) {
-        effectFlow?.onEach { effect ->
+    LaunchedEffect(key1 = message) {
+        effectFlow?.collect { effect ->
             when (effect) {
-                is HomeContract.Effect.DataWasLoaded -> {  // This is causing snackbar to show on every task state change
-                    snackbarHostState.showSnackbar(
-                        message = snackBarMessage,
-                        duration = SnackbarDuration.Short
-                    )
+                is HomeContract.Effect.DataWasLoaded -> {
+                    if (message.isNotEmpty()) {
+                        snackBarHostState.showSnackbar(
+                            message = message,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
                 }
                 is HomeContract.Effect.Navigation.ToTaskScreen -> onNavigationRequested(effect)
             }
-        }?.collect()
+        }
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         topBar = {
             HomeAppbar(
                 textInput = state.homeUiState.appBarUiState.searchText,
@@ -224,7 +229,8 @@ private fun HomeScreenPreview() {
     HomeScreen(
         state = HomeContract.State(homeUiState, isLoading = false, isError = false),
         effectFlow = flowOf(HomeContract.Effect.DataWasLoaded),
-        onEventSent = {} ,
+        onEventSent = {},
+        snackBarMessage = "",
         onNavigationRequested = {}
     )
 }

@@ -1,7 +1,8 @@
 package com.rm.todocomposemvvm.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -10,69 +11,73 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.rm.todocomposemvvm.ui.features.home.HomeViewModel
 import com.rm.todocomposemvvm.ui.features.home.HomeContract
+import com.rm.todocomposemvvm.ui.features.home.HomeViewModel
 import com.rm.todocomposemvvm.ui.features.home.composables.HomeScreen
 import com.rm.todocomposemvvm.ui.features.task.TaskDetailContract
 import com.rm.todocomposemvvm.ui.features.task.TaskViewModel
 import com.rm.todocomposemvvm.ui.features.task.composables.TaskScreen
-import com.rm.todocomposemvvm.ui.navigation.Route.HOME_ROUTE
-import com.rm.todocomposemvvm.ui.navigation.Route.TASK_ROUTE
-import com.rm.todocomposemvvm.ui.utils.AppConstants.TASK_ROUTE_ARG_KEY
+import com.rm.todocomposemvvm.ui.navigation.ScreenArgument.HOME_ROUTE_ARG_KEY
+import com.rm.todocomposemvvm.ui.navigation.ScreenArgument.TASK_ROUTE_ARG_KEY
+import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
 
 @Composable
 fun AppNavGraph(viewModel: HomeViewModel) {
 
     val navController: NavHostController = rememberNavController()
 
-    val navigationActions = remember(navController) {
-        AppNavigationActions(navController)
-    }
-
     NavHost(
         navController = navController,
-        startDestination = HOME_ROUTE
+        startDestination = Screen.Home.route
     ) {
 
-        addHomeComposable(
+        homeRoute(
             viewModel = viewModel,
-            onNavigateToTaskScreen = navigationActions.onNavigateToTaskScreen
+            onNavigateToTaskScreen = { taskId ->
+                navController.navigate(Screen.Task.passTaskId(taskId))
+            }
         )
 
-        addTaskComposable(
-            onNavigateToHomeScreen = navigationActions.onNavigateToHomeScreen
+        taskRoute(
+            onNavigateToHomeScreen = {
+                Screen.Home.passMessage(navController, it)
+            }
         )
     }
 }
 
-private fun NavGraphBuilder.addHomeComposable(
+private fun NavGraphBuilder.homeRoute(
     viewModel: HomeViewModel,
     onNavigateToTaskScreen: (taskId: Int) -> Unit
 ) {
     composable(
-        route = HOME_ROUTE
+        route = Screen.Home.route
     ) {
+        // Get the snackBarMessage passed from TaskScreen from SavedStateHandle
+        val snackBarMessage = it.savedStateHandle.get<String>(HOME_ROUTE_ARG_KEY)
+
         HomeScreen(
             state = viewModel.viewState.value,
             effectFlow = viewModel.effect,
-            onEventSent = { viewModel.setEvent(it) },
+            onEventSent = { event ->  viewModel.setEvent(event) },
+            snackBarMessage = snackBarMessage ?: EMPTY_STRING,
             onNavigationRequested = { navigationEffect ->
                 if (navigationEffect is HomeContract.Effect.Navigation.ToTaskScreen) {
-                    onNavigateToTaskScreen(navigationEffect.taskId)
+                    onNavigateToTaskScreen(navigationEffect.taskId) // pass taskId to TaskScreen
                 }
             }
         )
     }
 }
 
-private fun NavGraphBuilder.addTaskComposable(
-    onNavigateToHomeScreen: () -> Unit
+private fun NavGraphBuilder.taskRoute(
+    onNavigateToHomeScreen: (String) -> Unit
 ) {
     composable(
-        route = TASK_ROUTE,
-        arguments = listOf(
-            navArgument(TASK_ROUTE_ARG_KEY) { type = NavType.IntType })
+        route = Screen.Task.route,
+        arguments = listOf(navArgument(TASK_ROUTE_ARG_KEY) { type = NavType.IntType })
     ) {navBackStackEntry ->
+        // Get taskId passed from HomeScreen from Bundle
         val argument = requireNotNull(navBackStackEntry.arguments) { "Task id required as an argument" }
 
         val viewModel = hiltViewModel<TaskViewModel, TaskViewModel.TaskViewModelFactory> { factory ->
@@ -85,7 +90,7 @@ private fun NavGraphBuilder.addTaskComposable(
             onEventSent = { event -> viewModel.setEvent(event) },
             onNavigationRequested = { navigationEffect ->
                 if (navigationEffect is TaskDetailContract.Effect.Navigation.ToHomeScreen) {
-                    onNavigateToHomeScreen()
+                    onNavigateToHomeScreen(navigationEffect.message) // pass snackBarMessage to HomeScreen
                 }
             }
         )

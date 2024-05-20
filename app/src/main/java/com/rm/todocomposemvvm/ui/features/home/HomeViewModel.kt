@@ -1,5 +1,7 @@
 package com.rm.todocomposemvvm.ui.features.home
 
+import android.util.Log
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewModelScope
 import com.rm.todocomposemvvm.data.repository.TodoTaskRepository
 import com.rm.todocomposemvvm.ui.base.BaseViewModel
@@ -14,6 +16,7 @@ class HomeViewModel @Inject constructor(
 ) : BaseViewModel<HomeContract.State, HomeContract.Event, HomeContract.Effect>() {
 
     init {
+        Log.d("message", "HomeViewModel called")
         getTodoTasks()
     }
 

@@ -1,5 +1,6 @@
 package com.rm.todocomposemvvm.ui.features.task.composables
 
+import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -10,10 +11,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,6 +26,7 @@ import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
 import com.rm.todocomposemvvm.ui.utils.AppConstants.DEFAULT_TASK_ID
+import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,8 +35,10 @@ fun TaskAppBar(
     onAddClicked: (selectedTask: TodoTask) -> Unit,
     onUpdateClicked: (selectedTask: TodoTask) -> Unit,
     onDeleteClicked: (selectedTask: TodoTask) -> Unit,
-    onBackClicked: () -> Unit,
+    onBackClicked: (String) -> Unit,
 ) {
+    val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
+
     TopAppBar(
         title = {
             if (selectedTask.id == DEFAULT_TASK_ID) {
@@ -47,7 +55,7 @@ fun TaskAppBar(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.primary
         ),
-        navigationIcon = { BackActionIcon(onBackClicked = onBackClicked) },
+        navigationIcon = { BackActionIcon(onBackClicked = { onBackClicked(EMPTY_STRING) }) },
         actions = {
             if (selectedTask.id == DEFAULT_TASK_ID) {
                 AddActionIcon(
@@ -63,6 +71,7 @@ fun TaskAppBar(
                 )
                 UpdateActionIcon(
                     selectedTask = selectedTask,
+                    keyboardController = keyboardController,
                     onUpdateClicked = onUpdateClicked
                 )
             }
@@ -85,12 +94,12 @@ fun BackActionIcon(onBackClicked: () -> Unit) {
 fun AddActionIcon(
     selectedTask: TodoTask,
     onAddClicked: (selectedTask: TodoTask) -> Unit,
-    onBackClicked: () -> Unit
+    onBackClicked: (String) -> Unit
 ) {
     IconButton(
         onClick = {
             onAddClicked(selectedTask)
-            onBackClicked()
+            onBackClicked("Added: ${selectedTask.title}")
         }
     ) {
         Icon(
@@ -105,12 +114,12 @@ fun AddActionIcon(
 fun DeleteActionIcon(
     selectedTask: TodoTask,
     onDeleteClicked: (selectedTask: TodoTask) -> Unit,
-    onBackClicked: () -> Unit
+    onBackClicked: (String) -> Unit
 ) {
     IconButton(
         onClick = {
             onDeleteClicked(selectedTask)
-            onBackClicked()
+            onBackClicked("Deleted: ${selectedTask.title}")
         }
     ) {
         Icon(
@@ -124,10 +133,9 @@ fun DeleteActionIcon(
 @Composable
 fun UpdateActionIcon(
     selectedTask: TodoTask,
+    keyboardController: SoftwareKeyboardController?,
     onUpdateClicked: (selectedTask: TodoTask) -> Unit
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-
     IconButton(
         onClick = {
             keyboardController?.hide()

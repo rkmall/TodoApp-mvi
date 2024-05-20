@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-abstract class BaseViewModel<UiState: ViewState, Event: ViewEvent, Effect: ViewSideEffect> : ViewModel() {
+abstract class BaseViewModel<UiState : ViewState, Event : ViewEvent, Effect : ViewSideEffect> : ViewModel() {
 
     abstract fun setInitialState(): UiState
     abstract fun handleEvents(event: Event)

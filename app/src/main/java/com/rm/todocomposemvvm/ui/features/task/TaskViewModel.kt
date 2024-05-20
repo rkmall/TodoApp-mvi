@@ -31,14 +31,29 @@ class TaskViewModel @AssistedInject constructor (
 
     override fun handleEvents(event: TaskDetailContract.Event) {
         when (event) {
-            is TaskDetailContract.Event.AddIconClicked -> insertTask(event.task)
+            is TaskDetailContract.Event.AddIconClicked -> {
+                insertTask(event.task)
+                setEffect {
+                    TaskDetailContract.Effect.ShowSnackBar("Added: ${event.task.title}")
+                }
+            }
 
-            is TaskDetailContract.Event.UpdateIconClicked ->  updateTask(event.task)
+            is TaskDetailContract.Event.UpdateIconClicked -> {
+                updateTask(event.task)
+                setEffect {
+                    TaskDetailContract.Effect.ShowSnackBar("Updated: ${event.task.title}")
+                }
+            }
 
-            is TaskDetailContract.Event.DeleteIconClicked -> deleteTask(event.task)
+            is TaskDetailContract.Event.DeleteIconClicked -> {
+                deleteTask(event.task)
+                setEffect {
+                    TaskDetailContract.Effect.ShowSnackBar("Updated: ${event.task.title}")
+                }
+            }
 
             is TaskDetailContract.Event.BackIconClicked -> setEffect {
-                TaskDetailContract.Effect.Navigation.ToHomeScreen
+                TaskDetailContract.Effect.Navigation.ToHomeScreen(event.message)
             }
 
             is TaskDetailContract.Event.TitleTextInput -> setState {
@@ -55,8 +70,7 @@ class TaskViewModel @AssistedInject constructor (
         }
     }
 
-    fun getSelectedTask() {
-        Log.d("todo:", "getSelectedTask called")
+    private fun getSelectedTask() {
         if (taskId > DEFAULT_TASK_ID) {
             viewModelScope.launch {
                 setState { copy(isLoading = true, isError = false) }
