@@ -1,6 +1,5 @@
 package com.rm.todocomposemvvm.ui.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
@@ -9,15 +8,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.rm.todocomposemvvm.ui.features.home.HomeContract
-import com.rm.todocomposemvvm.ui.features.home.HomeViewModel
-import com.rm.todocomposemvvm.ui.features.home.SearchViewModel
-import com.rm.todocomposemvvm.ui.features.home.composables.HomeScreen
-import com.rm.todocomposemvvm.ui.features.task.TaskDetailContract
-import com.rm.todocomposemvvm.ui.features.task.TaskViewModel
-import com.rm.todocomposemvvm.ui.features.task.composables.TaskScreen
-import com.rm.todocomposemvvm.ui.navigation.ScreenArgument.HOME_ROUTE_ARG_KEY
-import com.rm.todocomposemvvm.ui.navigation.ScreenArgument.TASK_ROUTE_ARG_KEY
+import com.rm.todocomposemvvm.ui.screen.home.HomeContract
+import com.rm.todocomposemvvm.ui.screen.home.HomeViewModel
+import com.rm.todocomposemvvm.ui.screen.home.composables.HomeScreen
+import com.rm.todocomposemvvm.ui.screen.task.TaskDetailContract
+import com.rm.todocomposemvvm.ui.screen.task.TaskViewModel
+import com.rm.todocomposemvvm.ui.screen.task.composables.TaskScreen
+import com.rm.todocomposemvvm.ui.navigation.RouteArgument.HOME_ROUTE_ARG_KEY
+import com.rm.todocomposemvvm.ui.navigation.RouteArgument.TASK_ROUTE_ARG_KEY
 import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
 
 @Composable
@@ -28,13 +26,13 @@ fun AppNavGraph(navController: NavHostController) {
     ) {
         homeRoute(
             onNavigateToTaskScreen = { taskId ->
-                navController.navigate(Route.Task.passTaskId(taskId))
+                Route.Task.passTaskId(navController, taskId)
             }
         )
 
         taskRoute(
-            onNavigateToHomeScreen = {
-                Route.Home.passMessage(navController, it)
+            onNavigateToHomeScreen = { snackBarMessage ->
+                Route.Home.passSnackBarMessage(navController, snackBarMessage)
             }
         )
     }
@@ -43,8 +41,8 @@ fun AppNavGraph(navController: NavHostController) {
 private fun NavGraphBuilder.homeRoute(
     onNavigateToTaskScreen: (taskId: Int) -> Unit
 ) {
-    composable(Route.Home.route) {
-        val snackBarMessage = it.savedStateHandle.get<String>(HOME_ROUTE_ARG_KEY)
+    composable(Route.Home.route) { backStackEntry ->
+        val snackBarMessage = backStackEntry.savedStateHandle.get<String>(HOME_ROUTE_ARG_KEY)
 
         val viewModel = hiltViewModel<HomeViewModel>()
 
@@ -69,8 +67,8 @@ private fun NavGraphBuilder.taskRoute(
     composable(
         route = Route.Task.route,
         arguments = listOf(navArgument(TASK_ROUTE_ARG_KEY) { type = NavType.IntType })
-    ) {
-        val argument = requireNotNull(it.arguments) { "Task id required as an argument" }
+    ) { backStackEntry ->
+        val argument = requireNotNull(backStackEntry.arguments) { "Task id required as an argument" }
 
         val viewModel = hiltViewModel<TaskViewModel, TaskViewModel.TaskViewModelFactory> { factory ->
             factory.create(argument.getInt(TASK_ROUTE_ARG_KEY))
@@ -82,7 +80,7 @@ private fun NavGraphBuilder.taskRoute(
             onEventSent = { event -> viewModel.setEvent(event) },
             onNavigationRequested = { navigationEffect ->
                 if (navigationEffect is TaskDetailContract.Effect.Navigation.ToHomeScreen) {
-                    onNavigateToHomeScreen(navigationEffect.message)
+                    onNavigateToHomeScreen(navigationEffect.snackBarMessage)
                 }
             }
         )

@@ -22,5 +22,3 @@ interface ViewEvent
  * or show other pieces of UI that is not tied to [ViewState].
  */
 interface ViewSideEffect
-
-const val SIDE_EFFECTS_KEY = "side-effects_key"

@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.features.task.composables
+package com.rm.todocomposemvvm.ui.screen.task.composables
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
@@ -31,8 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.data.room.entity.Priority
-import com.rm.todocomposemvvm.ui.components.PriorityItem
-import com.rm.todocomposemvvm.ui.components.taskPriorityItemList
+import com.rm.todocomposemvvm.ui.component.PriorityItem
+import com.rm.todocomposemvvm.ui.component.taskPriorityItemList
 import com.rm.todocomposemvvm.ui.theme.PaddingMedium
 import com.rm.todocomposemvvm.ui.theme.PriorityDropDownMenuHeight
 import com.rm.todocomposemvvm.ui.theme.PriorityIndicatorSize

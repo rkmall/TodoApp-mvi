@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.features.home
+package com.rm.todocomposemvvm.ui.screen.home
 
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
 import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING

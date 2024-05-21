@@ -1,6 +1,5 @@
-package com.rm.todocomposemvvm.ui.features.task
+package com.rm.todocomposemvvm.ui.screen.task
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.rm.todocomposemvvm.data.repository.TodoTaskRepository
 import com.rm.todocomposemvvm.data.room.entity.TodoTask

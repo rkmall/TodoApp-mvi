@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.features.component
+package com.rm.todocomposemvvm.ui.screen.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

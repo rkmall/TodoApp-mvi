@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.features.task.composables
+package com.rm.todocomposemvvm.ui.screen.task.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.sp
 import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
-import com.rm.todocomposemvvm.ui.features.component.Progress
-import com.rm.todocomposemvvm.ui.features.task.TaskDetailContract
+import com.rm.todocomposemvvm.ui.screen.component.Progress
+import com.rm.todocomposemvvm.ui.screen.task.TaskDetailContract
 import com.rm.todocomposemvvm.ui.theme.PaddingExtraSmall
 import com.rm.todocomposemvvm.ui.theme.PaddingMedium
 import com.rm.todocomposemvvm.ui.theme.PaddingSmall
@@ -44,7 +44,6 @@ fun TaskScreen(
     onEventSent: (event: TaskDetailContract.Event) -> Unit,
     onNavigationRequested: (TaskDetailContract.Effect.Navigation) -> Unit
 ) {
-
     val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(key1 = Unit) {

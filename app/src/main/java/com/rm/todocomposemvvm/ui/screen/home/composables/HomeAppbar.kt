@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.features.home.composables
+package com.rm.todocomposemvvm.ui.screen.home.composables
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -18,11 +17,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -41,35 +38,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.data.room.entity.Priority
-import com.rm.todocomposemvvm.ui.components.PriorityItem
-import com.rm.todocomposemvvm.ui.components.sortPriorityItemList
+import com.rm.todocomposemvvm.ui.component.PriorityItem
+import com.rm.todocomposemvvm.ui.component.sortPriorityItemList
 import com.rm.todocomposemvvm.ui.theme.PaddingMedium
-import com.rm.todocomposemvvm.ui.theme.topAppBarContentColor
 import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
 
 @Composable
 fun HomeAppbar(
     textInput: String,
+    searchActive: Boolean,
     onSortClicked: (Priority) -> Unit,
     onDeleteClicked: () -> Unit,
-    onSearchClicked: (searchString: String) -> Unit,
+    onSearchIconClicked: (Boolean) -> Unit,
+    onCloseIconClicked: (Boolean) -> Unit,
     onTextInput: (String) -> Unit
 ) {
-    var searchAppBarStateOpen by remember { mutableStateOf(false) }
-
-    if (searchAppBarStateOpen) {
+    if (searchActive) {
         SearchAppbar(
             textInput = textInput,
             onTextInput = { onTextInput(it) },
-            onCloseClicked = {
-                searchAppBarStateOpen = false
-                onTextInput(EMPTY_STRING)
-            },
-            onSearchClicked = { onSearchClicked(it) }
+            onCloseIconClicked = { onCloseIconClicked(false) }
         )
     } else {
         MainHomeAppbar(
-            onSearchClicked = { searchAppBarStateOpen = true },
+            onSearchClicked = { onSearchIconClicked(true) },
             onSortClicked = { onSortClicked(it) },
             onDeleteClicked = { onDeleteClicked() }
         )
@@ -101,8 +93,7 @@ fun MainHomeAppbar(
 fun SearchAppbar(
     textInput: String,
     onTextInput: (String) -> Unit,
-    onCloseClicked: () -> Unit,
-    onSearchClicked: (String) -> Unit
+    onCloseIconClicked: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -143,11 +134,12 @@ fun SearchAppbar(
                 }
             },
             trailingIcon = {
-                IconButton(onClick = {
+                IconButton(
+                    onClick = {
                         if (textInput.isNotEmpty()) {
                             onTextInput(EMPTY_STRING)
                         } else {
-                            onCloseClicked()
+                            onCloseIconClicked()
                         }
                     }
                 ) {
@@ -159,9 +151,6 @@ fun SearchAppbar(
             },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(
-                onSearch = { onSearchClicked(textInput) }
             )
         )
     }

@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.components
+package com.rm.todocomposemvvm.ui.component
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Row

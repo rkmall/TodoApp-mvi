@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.features.home
+package com.rm.todocomposemvvm.ui.screen.home
 
 import com.rm.todocomposemvvm.ui.base.ViewEvent
 import com.rm.todocomposemvvm.ui.base.ViewSideEffect
@@ -9,7 +9,8 @@ class HomeContract {
     sealed class Event : ViewEvent {
         data object SortIconClicked: Event()
         data object DeleteAllIconClicked : Event()
-        data class SearchClicked(val searchQuery: String) : Event()
+        data class SearchIconClicked(val searchActive: Boolean) : Event()
+        data class CloseIconClicked(val searchActive: Boolean) : Event()
         data class SearchTextInput(val searchQuery: String) : Event()
         data class TaskItemClicked(val taskId: Int ) : Event()
     }

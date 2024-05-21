@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.features.home.composables
+package com.rm.todocomposemvvm.ui.screen.home.composables
 
 
 import androidx.compose.foundation.background
@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,21 +31,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rm.todocomposemvvm.R
-import com.rm.todocomposemvvm.data.repository.TodoTaskRepository
-import com.rm.todocomposemvvm.data.repository.TodoTaskRepositoryImpl
 import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
-import com.rm.todocomposemvvm.ui.features.component.Progress
-import com.rm.todocomposemvvm.ui.features.home.AppBarUiState
-import com.rm.todocomposemvvm.ui.features.home.HomeContract
-import com.rm.todocomposemvvm.ui.features.home.HomeUiState
-import com.rm.todocomposemvvm.ui.features.home.HomeViewModel
-import com.rm.todocomposemvvm.ui.features.home.SearchViewModel
+import com.rm.todocomposemvvm.ui.screen.component.Progress
+import com.rm.todocomposemvvm.ui.screen.home.HomeContract
+import com.rm.todocomposemvvm.ui.screen.home.HomeViewModel
 import com.rm.todocomposemvvm.ui.theme.PaddingExtraSmall
 import com.rm.todocomposemvvm.ui.utils.AppConstants.DEFAULT_TASK_ID
 import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun HomeScreen(
@@ -58,17 +51,17 @@ fun HomeScreen(
     onNavigationRequested: (navigationEffect: HomeContract.Effect.Navigation) -> Unit
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
-    val message by remember { mutableStateOf(snackBarMessage) }
 
-    val searchText by viewModel.inputText.collectAsState()
+    val searchText by viewModel.searchText.collectAsState()
+    val searchActive by viewModel.searchActive.collectAsState()
 
-    LaunchedEffect(key1 = message) {
+    LaunchedEffect(key1 = snackBarMessage) {
         effectFlow?.collect { effect ->
             when (effect) {
                 is HomeContract.Effect.DataWasLoaded -> {
-                    if (message.isNotEmpty()) {
+                    if (snackBarMessage.isNotEmpty()) {
                         snackBarHostState.showSnackbar(
-                            message = message,
+                            message = snackBarMessage,
                             duration = SnackbarDuration.Short
                         )
                     }
@@ -83,9 +76,11 @@ fun HomeScreen(
         topBar = {
             HomeAppbar(
                 textInput = searchText,
-                onSortClicked = {},
-                onDeleteClicked = {},
-                onSearchClicked = {},
+                searchActive = searchActive,
+                onSortClicked = { onEventSent(HomeContract.Event.SortIconClicked) },
+                onDeleteClicked = { onEventSent(HomeContract.Event.DeleteAllIconClicked) },
+                onSearchIconClicked = { onEventSent(HomeContract.Event.SearchIconClicked(it)) },
+                onCloseIconClicked = { onEventSent(HomeContract.Event.CloseIconClicked(it)) },
                 onTextInput = { onEventSent(HomeContract.Event.SearchTextInput(it)) }
             )
         },

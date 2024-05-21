@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.features.task
+package com.rm.todocomposemvvm.ui.screen.task
 
 import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
@@ -29,7 +29,7 @@ class TaskDetailContract {
         data class ShowSnackBar(val message: String) : Effect()
 
         sealed class Navigation : Effect() {
-            data class ToHomeScreen(val message: String) : Navigation()
+            data class ToHomeScreen(val snackBarMessage: String) : Navigation()
         }
     }
 }

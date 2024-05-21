@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.features.home.composables
+package com.rm.todocomposemvvm.ui.screen.home.composables
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add

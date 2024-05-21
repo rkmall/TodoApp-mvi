@@ -1,4 +1,4 @@
-package com.rm.todocomposemvvm.ui.features.home.composables
+package com.rm.todocomposemvvm.ui.screen.home.composables
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement

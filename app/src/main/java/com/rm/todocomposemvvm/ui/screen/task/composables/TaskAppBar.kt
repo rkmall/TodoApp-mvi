@@ -1,6 +1,5 @@
-package com.rm.todocomposemvvm.ui.features.task.composables
+package com.rm.todocomposemvvm.ui.screen.task.composables
 
-import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -11,12 +10,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -99,7 +95,7 @@ fun AddActionIcon(
     IconButton(
         onClick = {
             onAddClicked(selectedTask)
-            if(selectedTask.title.isNotEmpty() || selectedTask.description.isNotEmpty()) {
+            if(selectedTask.title.isNotEmpty() && selectedTask.description.isNotEmpty()) {
                 onBackClicked("Added: ${selectedTask.title}")
             }
         }
