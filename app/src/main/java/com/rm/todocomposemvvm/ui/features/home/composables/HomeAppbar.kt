@@ -1,8 +1,11 @@
 package com.rm.todocomposemvvm.ui.features.home.composables
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -15,9 +18,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -38,6 +44,7 @@ import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.ui.components.PriorityItem
 import com.rm.todocomposemvvm.ui.components.sortPriorityItemList
 import com.rm.todocomposemvvm.ui.theme.PaddingMedium
+import com.rm.todocomposemvvm.ui.theme.topAppBarContentColor
 import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
 
 @Composable
@@ -106,7 +113,8 @@ fun SearchAppbar(
     ) {
         TextField(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.statusBars),
             value = textInput,
             onValueChange = { onTextInput(it) },
             placeholder = {
@@ -118,6 +126,11 @@ fun SearchAppbar(
             textStyle = TextStyle(
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = MaterialTheme.typography.titleLarge.fontSize
+            ),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
             ),
             singleLine = true,
             leadingIcon = {
@@ -232,16 +245,5 @@ private fun AppBarsPreview() {
         onSearchClicked = {},
         onSortClicked = {},
         onDeleteClicked = {}
-    )
-}
-
-@Preview
-@Composable
-private fun SearchBarsPreview() {
-    SearchAppbar(
-        textInput = "Search",
-        onTextInput = {} ,
-        onCloseClicked = {},
-        onSearchClicked = {}
     )
 }

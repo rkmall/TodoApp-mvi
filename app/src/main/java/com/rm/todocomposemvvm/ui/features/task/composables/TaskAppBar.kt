@@ -99,7 +99,9 @@ fun AddActionIcon(
     IconButton(
         onClick = {
             onAddClicked(selectedTask)
-            onBackClicked("Added: ${selectedTask.title}")
+            if(selectedTask.title.isNotEmpty() || selectedTask.description.isNotEmpty()) {
+                onBackClicked("Added: ${selectedTask.title}")
+            }
         }
     ) {
         Icon(

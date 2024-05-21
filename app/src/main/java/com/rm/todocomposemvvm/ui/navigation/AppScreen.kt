@@ -9,15 +9,15 @@ object ScreenArgument {
     const val TASK_ROUTE_ARG_KEY = "taskId"
 }
 
-sealed class Screen(val route: String) {
-    data object Home : Screen(route = "home") {
+sealed class Route(val route: String) {
+    data object Home : Route(route = "home") {
         fun passMessage(navController: NavController, snackBarMessage: String) {
             navController.previousBackStackEntry?.savedStateHandle?.set(HOME_ROUTE_ARG_KEY, snackBarMessage)
             navController.popBackStack(route, false)
         }
     }
 
-    data object Task : Screen(route = "task/{$TASK_ROUTE_ARG_KEY}") {
+    data object Task : Route(route = "task/{$TASK_ROUTE_ARG_KEY}") {
         fun passTaskId(taskId: Int): String {
             return "task/$taskId"
         }

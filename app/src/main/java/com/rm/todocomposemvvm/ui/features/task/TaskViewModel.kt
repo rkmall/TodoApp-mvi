@@ -32,33 +32,28 @@ class TaskViewModel @AssistedInject constructor (
     override fun handleEvents(event: TaskDetailContract.Event) {
         when (event) {
             is TaskDetailContract.Event.AddIconClicked -> {
-                insertTask(event.task)
-                setEffect {
-                    TaskDetailContract.Effect.ShowSnackBar("Added: ${event.task.title}")
+                if (validateFields(event.task.title, event.task.description)) {
+                    insertTask(event.task)
+                } else {
+                    setEffect {
+                        TaskDetailContract.Effect.ShowSnackBar("Please enter the your task details")
+                    }
                 }
             }
 
             is TaskDetailContract.Event.UpdateIconClicked -> {
                 updateTask(event.task)
-                setEffect {
-                    TaskDetailContract.Effect.ShowSnackBar("Updated: ${event.task.title}")
-                }
             }
 
             is TaskDetailContract.Event.DeleteIconClicked -> {
                 deleteTask(event.task)
-                setEffect {
-                    TaskDetailContract.Effect.ShowSnackBar("Updated: ${event.task.title}")
-                }
             }
 
             is TaskDetailContract.Event.BackIconClicked -> setEffect {
                 TaskDetailContract.Effect.Navigation.ToHomeScreen(event.message)
             }
 
-            is TaskDetailContract.Event.TitleTextInput -> setState {
-                copy(task = task?.copy(title = event.title))
-            }
+            is TaskDetailContract.Event.TitleTextInput -> updateTitle(event.title)
 
             is TaskDetailContract.Event.DescriptionTextInput -> setState {
                 copy(task = task?.copy(description = event.description))
@@ -86,6 +81,18 @@ class TaskViewModel @AssistedInject constructor (
         } else {
             setState { copy(isLoading = false, isError = false) }
         }
+    }
+
+    private fun updateTitle(title: String) {
+        if (title.length < 30) {
+            setState {
+                copy(task = task?.copy(title = title))
+            }
+        }
+    }
+
+    private fun validateFields(title: String, description: String): Boolean {
+        return title.isNotEmpty() && description.isNotEmpty()
     }
 
     private fun insertTask(task: TodoTask) {

@@ -1,6 +1,6 @@
 package com.rm.todocomposemvvm.ui.features.home.composables
 
-import android.util.Log
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +20,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,12 +32,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rm.todocomposemvvm.R
+import com.rm.todocomposemvvm.data.repository.TodoTaskRepository
+import com.rm.todocomposemvvm.data.repository.TodoTaskRepositoryImpl
 import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
 import com.rm.todocomposemvvm.ui.features.component.Progress
 import com.rm.todocomposemvvm.ui.features.home.AppBarUiState
 import com.rm.todocomposemvvm.ui.features.home.HomeContract
 import com.rm.todocomposemvvm.ui.features.home.HomeUiState
+import com.rm.todocomposemvvm.ui.features.home.HomeViewModel
+import com.rm.todocomposemvvm.ui.features.home.SearchViewModel
 import com.rm.todocomposemvvm.ui.theme.PaddingExtraSmall
 import com.rm.todocomposemvvm.ui.utils.AppConstants.DEFAULT_TASK_ID
 import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
@@ -45,16 +50,17 @@ import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun HomeScreen(
+    viewModel: HomeViewModel,
     state: HomeContract.State,
     effectFlow: Flow<HomeContract.Effect>?,
     onEventSent: (event: HomeContract.Event) -> Unit,
     snackBarMessage: String = EMPTY_STRING,
     onNavigationRequested: (navigationEffect: HomeContract.Effect.Navigation) -> Unit
 ) {
-    Log.d("screen", "Home Screen Called")
     val snackBarHostState = remember { SnackbarHostState() }
-
     val message by remember { mutableStateOf(snackBarMessage) }
+
+    val searchText by viewModel.inputText.collectAsState()
 
     LaunchedEffect(key1 = message) {
         effectFlow?.collect { effect ->
@@ -76,7 +82,7 @@ fun HomeScreen(
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         topBar = {
             HomeAppbar(
-                textInput = state.homeUiState.appBarUiState.searchText,
+                textInput = searchText,
                 onSortClicked = {},
                 onDeleteClicked = {},
                 onSearchClicked = {},
@@ -84,7 +90,9 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            HomeFab(onNavigateToTaskScreen = { onEventSent(HomeContract.Event.TaskItemClicked(it)) })
+            HomeFab(onNavigateToTaskScreen = {
+                onEventSent(HomeContract.Event.TaskItemClicked(it))
+            })
         }
     ) { innerPaddings ->
         when {
@@ -197,40 +205,5 @@ private fun HomeContentPreview() {
 private fun HomeEmptyContentPreview() {
     HomeEmptyContent(
         onNavigateToTaskScreen = {}
-    )
-}
-
-@Preview
-@Composable
-private fun HomeScreenPreview() {
-    val homeUiState = HomeUiState(
-        tasks = listOf(
-            TodoTask(
-                1,
-                "Cook food",
-                "This evening you need to cook yourself! Vegetables are already there.",
-                Priority.LOW
-            ),
-            TodoTask(
-                2,
-                "Learn compose",
-                "Learn compose side-effects at 5 pm",
-                Priority.HIGH
-            ),
-            TodoTask(
-                3,
-                "Go running",
-                "Go for running in the park for at least 30 mins",
-                Priority.MEDIUM
-            )
-        ),
-        appBarUiState = AppBarUiState()
-    )
-    HomeScreen(
-        state = HomeContract.State(homeUiState, isLoading = false, isError = false),
-        effectFlow = flowOf(HomeContract.Effect.DataWasLoaded),
-        onEventSent = {},
-        snackBarMessage = "",
-        onNavigationRequested = {}
     )
 }

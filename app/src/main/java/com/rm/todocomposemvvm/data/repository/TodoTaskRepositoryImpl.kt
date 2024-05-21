@@ -39,7 +39,7 @@ class TodoTaskRepositoryImpl @Inject constructor(private val todoTaskDao: TodoTa
     }
 
     override fun searchTodoTask(searchQuery: String): Flow<List<TodoTask>> {
-        Log.d("todo:", "SEARCHING TASKD")
+        Log.d("todo:", "SEARCHING TASKS")
         return todoTaskDao.searchTodoTask(searchQuery)
     }
 
