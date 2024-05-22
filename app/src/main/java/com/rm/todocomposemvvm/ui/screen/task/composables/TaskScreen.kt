@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -18,7 +20,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -29,6 +34,11 @@ import androidx.compose.ui.unit.sp
 import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
+import com.rm.todocomposemvvm.ui.component.DialogConstants
+import com.rm.todocomposemvvm.ui.component.DialogConstants.DELETE_ICON_DESCRIPTION
+import com.rm.todocomposemvvm.ui.component.DialogConstants.DELETE_TASK_TEXT
+import com.rm.todocomposemvvm.ui.component.DialogConstants.DELETE_TASK_TITLE
+import com.rm.todocomposemvvm.ui.component.TaskDeletionAlertDialog
 import com.rm.todocomposemvvm.ui.screen.component.Progress
 import com.rm.todocomposemvvm.ui.screen.task.TaskDetailContract
 import com.rm.todocomposemvvm.ui.theme.PaddingExtraSmall
@@ -46,6 +56,8 @@ fun TaskScreen(
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
 
+    var showAlertDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(key1 = Unit) {
         effectFlow?.collect { effect ->
             when (effect) {
@@ -55,6 +67,11 @@ fun TaskScreen(
                         duration = SnackbarDuration.Short
                     )
                 }
+
+                is TaskDetailContract.Effect.ShowAlertDialog -> {
+                    showAlertDialog = true
+                }
+
                 is TaskDetailContract.Effect.Navigation.ToHomeScreen -> onNavigationRequested(effect)
             }
         }
@@ -73,7 +90,24 @@ fun TaskScreen(
                 )
             }
         },
-    ) { paddings ->
+    ) { innerPaddings ->
+
+        if (showAlertDialog) {
+            TaskDeletionAlertDialog(
+                onDismissRequest = {
+                    showAlertDialog = false
+                },
+                onConfirmation = {
+                    onEventSent(TaskDetailContract.Event.ConfirmDeletion(state.task!!))
+                    showAlertDialog = false
+                },
+                dialogTitle = DELETE_TASK_TITLE ,
+                dialogText = DELETE_TASK_TEXT ,
+                icon = Icons.Default.Info,
+                iconDescription = DELETE_ICON_DESCRIPTION
+            )
+        }
+
         when {
             state.isLoading -> Progress()
             state.isError -> {}
@@ -81,7 +115,7 @@ fun TaskScreen(
                 state.task?.let { task ->
                     TaskContent(
                         modifier = Modifier
-                            .padding(paddings),
+                            .padding(innerPaddings),
                         title = task.title,
                         description = task.description,
                         priority = task.priority,
@@ -143,6 +177,11 @@ fun TaskContent(
             textStyle = MaterialTheme.typography.bodyLarge,
         )
     }
+}
+
+@Composable
+private fun CreateAlertDialog() {
+
 }
 
 @Preview

@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,7 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -33,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
+import com.rm.todocomposemvvm.ui.component.DialogConstants
+import com.rm.todocomposemvvm.ui.component.TaskDeletionAlertDialog
 import com.rm.todocomposemvvm.ui.screen.component.Progress
 import com.rm.todocomposemvvm.ui.screen.home.HomeContract
 import com.rm.todocomposemvvm.ui.screen.home.HomeViewModel
@@ -52,6 +58,8 @@ fun HomeScreen(
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
 
+    var showAlertDialog by remember { mutableStateOf(false) }
+
     val searchText by viewModel.searchText.collectAsState()
     val searchActive by viewModel.searchActive.collectAsState()
 
@@ -66,7 +74,14 @@ fun HomeScreen(
                         )
                     }
                 }
-                is HomeContract.Effect.Navigation.ToTaskScreen -> onNavigationRequested(effect)
+
+                is HomeContract.Effect.ShowAlertDialog -> {
+                    showAlertDialog = true
+                }
+
+                is HomeContract.Effect.Navigation.ToTaskScreen -> {
+                    onNavigationRequested(effect)
+                }
             }
         }
     }
@@ -77,8 +92,8 @@ fun HomeScreen(
             HomeAppbar(
                 textInput = searchText,
                 searchActive = searchActive,
-                onSortClicked = { onEventSent(HomeContract.Event.SortIconClicked) },
-                onDeleteClicked = { onEventSent(HomeContract.Event.DeleteAllIconClicked) },
+                onSortClicked = { onEventSent(HomeContract.Event.SortIconClicked(it)) },
+                onDeleteIconClicked = { onEventSent(HomeContract.Event.DeleteIconClicked) },
                 onSearchIconClicked = { onEventSent(HomeContract.Event.SearchIconClicked(it)) },
                 onCloseIconClicked = { onEventSent(HomeContract.Event.CloseIconClicked(it)) },
                 onTextInput = { onEventSent(HomeContract.Event.SearchTextInput(it)) }
@@ -90,6 +105,23 @@ fun HomeScreen(
             })
         }
     ) { innerPaddings ->
+
+        if (showAlertDialog) {
+            TaskDeletionAlertDialog(
+                onDismissRequest = {
+                    showAlertDialog = false
+                },
+                onConfirmation = {
+                    onEventSent(HomeContract.Event.ConfirmDeletion)
+                    showAlertDialog = false
+                },
+                dialogTitle = DialogConstants.DELETE_ALL_TASKS_TITLE ,
+                dialogText = DialogConstants.DELETE_ALL_TASKS_TEXT ,
+                icon = Icons.Default.Info,
+                iconDescription = DialogConstants.DELETE_ICON_DESCRIPTION
+            )
+        }
+
         when {
             state.isLoading -> Progress()
             state.isError -> HomeEmptyContent(

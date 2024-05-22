@@ -1,8 +1,8 @@
 package com.rm.todocomposemvvm.ui.screen.home
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.rm.todocomposemvvm.data.repository.TodoTaskRepository
+import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.ui.base.BaseViewModel
 import com.rm.todocomposemvvm.ui.utils.EMPTY_STRING
 import com.rm.todocomposemvvm.ui.utils.isBlankOrEmpty
@@ -44,8 +44,10 @@ class HomeViewModel @Inject constructor(
 
     override fun handleEvents(event: HomeContract.Event) {
         when (event) {
-            is HomeContract.Event.TaskItemClicked -> setEffect {
-                HomeContract.Effect.Navigation.ToTaskScreen(taskId = event.taskId)
+            is HomeContract.Event.TaskItemClicked -> {
+                setEffect {
+                    HomeContract.Effect.Navigation.ToTaskScreen(taskId = event.taskId)
+                }
             }
 
             is HomeContract.Event.SearchIconClicked -> {
@@ -61,15 +63,19 @@ class HomeViewModel @Inject constructor(
                 onSearchTextChange(event.searchQuery)
             }
 
-            is HomeContract.Event.DeleteAllIconClicked -> {
+            is HomeContract.Event.DeleteIconClicked -> {
+                setEffect {
+                    HomeContract.Effect.ShowAlertDialog
+                }
+            }
+
+            is HomeContract.Event.ConfirmDeletion -> {
                 deleteAllTasks()
             }
 
             is HomeContract.Event.SortIconClicked -> {
-
+                getSortedTasks(event.priority)
             }
-
-            else -> {}
         }
     }
 
@@ -121,6 +127,36 @@ class HomeViewModel @Inject constructor(
                     }
                     setEffect { HomeContract.Effect.DataWasLoaded }
                 }
+        }
+    }
+
+    private fun getSortedTasks(priority: Priority) {
+        setState { copy(isLoading = true, isError = false) }
+        job?.cancel()
+        job = viewModelScope.launch {
+            if (priority == Priority.HIGH) {
+                repository.sortByHighPriority()
+                    .catch {
+                        setState { copy(isError = true, isLoading = false) }
+                    }
+                    .collect { tasks ->
+                        setState {
+                            copy(homeUiState = homeUiState.copy(tasks = tasks), isLoading = false)
+                        }
+                        setEffect { HomeContract.Effect.DataWasLoaded }
+                    }
+            } else {
+                repository.sortByLowPriority()
+                    .catch {
+                        setState { copy(isError = true, isLoading = false) }
+                    }
+                    .collect { tasks ->
+                        setState {
+                            copy(homeUiState = homeUiState.copy(tasks = tasks), isLoading = false)
+                        }
+                        setEffect { HomeContract.Effect.DataWasLoaded }
+                    }
+            }
         }
     }
 

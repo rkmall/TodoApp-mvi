@@ -56,14 +56,12 @@ fun TaskAppBar(
             if (selectedTask.id == DEFAULT_TASK_ID) {
                 AddActionIcon(
                     selectedTask = selectedTask,
-                    onAddClicked = onAddClicked,
-                    onBackClicked = onBackClicked
+                    onAddClicked = onAddClicked
                 )
             } else {
                 DeleteActionIcon(
                     selectedTask = selectedTask,
-                    onDeleteClicked = onDeleteClicked,
-                    onBackClicked = onBackClicked
+                    onDeleteClicked = onDeleteClicked
                 )
                 UpdateActionIcon(
                     selectedTask = selectedTask,
@@ -89,16 +87,10 @@ fun BackActionIcon(onBackClicked: () -> Unit) {
 @Composable
 fun AddActionIcon(
     selectedTask: TodoTask,
-    onAddClicked: (selectedTask: TodoTask) -> Unit,
-    onBackClicked: (String) -> Unit
+    onAddClicked: (selectedTask: TodoTask) -> Unit
 ) {
     IconButton(
-        onClick = {
-            onAddClicked(selectedTask)
-            if(selectedTask.title.isNotEmpty() && selectedTask.description.isNotEmpty()) {
-                onBackClicked("Added: ${selectedTask.title}")
-            }
-        }
+        onClick = { onAddClicked(selectedTask) }
     ) {
         Icon(
             imageVector = Icons.Filled.Add,
@@ -111,15 +103,9 @@ fun AddActionIcon(
 @Composable
 fun DeleteActionIcon(
     selectedTask: TodoTask,
-    onDeleteClicked: (selectedTask: TodoTask) -> Unit,
-    onBackClicked: (String) -> Unit
+    onDeleteClicked: (selectedTask: TodoTask) -> Unit
 ) {
-    IconButton(
-        onClick = {
-            onDeleteClicked(selectedTask)
-            onBackClicked("Deleted: ${selectedTask.title}")
-        }
-    ) {
+    IconButton(onClick = { onDeleteClicked(selectedTask) }) {
         Icon(
             imageVector = Icons.Filled.Delete,
             contentDescription = stringResource(R.string.delete_task),
@@ -134,12 +120,10 @@ fun UpdateActionIcon(
     keyboardController: SoftwareKeyboardController?,
     onUpdateClicked: (selectedTask: TodoTask) -> Unit
 ) {
-    IconButton(
-        onClick = {
+    IconButton(onClick = {
             keyboardController?.hide()
             onUpdateClicked(selectedTask)
-        }
-    ) {
+    }) {
         Icon(
             imageVector = Icons.Filled.Check,
             contentDescription = stringResource(R.string.update_task),

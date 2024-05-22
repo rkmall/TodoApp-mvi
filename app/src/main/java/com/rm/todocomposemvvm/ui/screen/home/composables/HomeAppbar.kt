@@ -48,7 +48,7 @@ fun HomeAppbar(
     textInput: String,
     searchActive: Boolean,
     onSortClicked: (Priority) -> Unit,
-    onDeleteClicked: () -> Unit,
+    onDeleteIconClicked: () -> Unit,
     onSearchIconClicked: (Boolean) -> Unit,
     onCloseIconClicked: (Boolean) -> Unit,
     onTextInput: (String) -> Unit
@@ -63,7 +63,7 @@ fun HomeAppbar(
         MainHomeAppbar(
             onSearchClicked = { onSearchIconClicked(true) },
             onSortClicked = { onSortClicked(it) },
-            onDeleteClicked = { onDeleteClicked() }
+            onDeleteIconClicked = { onDeleteIconClicked() }
         )
     }
 }
@@ -73,7 +73,7 @@ fun HomeAppbar(
 fun MainHomeAppbar(
     onSearchClicked: () -> Unit,
     onSortClicked: (Priority) -> Unit,
-    onDeleteClicked: () -> Unit
+    onDeleteIconClicked: () -> Unit
 ) {
     TopAppBar(
         title = { Text(text = stringResource(R.string.list_screen_title)) },
@@ -84,7 +84,7 @@ fun MainHomeAppbar(
         actions = {
             SearchAction(onSearchClicked = onSearchClicked)
             SortAction(onSortClicked = onSortClicked )
-            DeleteAllAction(onDeleteClicked = onDeleteClicked)
+            DeleteAllAction(onDeleteIconClicked = onDeleteIconClicked)
         }
     )
 }
@@ -170,7 +170,9 @@ fun SearchAction(onSearchClicked: () -> Unit) {
 }
 
 @Composable
-fun SortAction(onSortClicked: (Priority) -> Unit) {
+fun SortAction(
+    onSortClicked: (Priority) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
 
     IconButton(onClick = { expanded = true}) {
@@ -197,17 +199,19 @@ fun SortAction(onSortClicked: (Priority) -> Unit) {
 }
 
 @Composable
-fun DeleteAllAction(onDeleteClicked: () -> Unit) {
+fun DeleteAllAction(
+    onDeleteIconClicked: () -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
 
-    IconButton(onClick = { expanded = !expanded}) {
+    IconButton(onClick = { expanded = !expanded }) {
         Icon(
             imageVector = Icons.Filled.MoreVert,
             contentDescription = stringResource(R.string.delete_all),
             tint = MaterialTheme.colorScheme.primary
         )
         DropdownMenu(
-            expanded = expanded ,
+            expanded = expanded,
             onDismissRequest = { expanded = !expanded }
         ) {
             DropdownMenuItem(
@@ -220,7 +224,7 @@ fun DeleteAllAction(onDeleteClicked: () -> Unit) {
                 },
                 onClick = {
                     expanded = !expanded
-                    onDeleteClicked()
+                    onDeleteIconClicked()
                 }
             )
         }
@@ -233,6 +237,6 @@ private fun AppBarsPreview() {
     MainHomeAppbar(
         onSearchClicked = {},
         onSortClicked = {},
-        onDeleteClicked = {}
+        onDeleteIconClicked = {}
     )
 }

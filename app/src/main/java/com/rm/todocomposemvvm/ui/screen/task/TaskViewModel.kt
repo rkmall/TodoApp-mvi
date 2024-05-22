@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel(assistedFactory = TaskViewModel.TaskViewModelFactory::class)
 class TaskViewModel @AssistedInject constructor (
     @Assisted val taskId: Int,
-    val repository: TodoTaskRepository
+    private val repository: TodoTaskRepository
 ) : BaseViewModel<TaskDetailContract.State, TaskDetailContract.Event, TaskDetailContract.Effect>() {
 
     override fun setInitialState() = TaskDetailContract.State(
@@ -33,6 +33,7 @@ class TaskViewModel @AssistedInject constructor (
             is TaskDetailContract.Event.AddIconClicked -> {
                 if (validateFields(event.task.title, event.task.description)) {
                     insertTask(event.task)
+                    setEvent(TaskDetailContract.Event.BackIconClicked("Added: ${event.task.title}"))
                 } else {
                     setEffect {
                         TaskDetailContract.Effect.ShowSnackBar("Please enter the your task details")
@@ -45,21 +46,41 @@ class TaskViewModel @AssistedInject constructor (
             }
 
             is TaskDetailContract.Event.DeleteIconClicked -> {
+                setEffect {
+                    TaskDetailContract.Effect.ShowAlertDialog(event.task)
+                }
+            }
+
+            is TaskDetailContract.Event.ConfirmDeletion -> {
                 deleteTask(event.task)
+                setEvent(TaskDetailContract.Event.BackIconClicked(event.task.title))
             }
 
-            is TaskDetailContract.Event.BackIconClicked -> setEffect {
-                TaskDetailContract.Effect.Navigation.ToHomeScreen(event.message)
+            is TaskDetailContract.Event.BackIconClicked -> {
+                setEffect {
+                    TaskDetailContract.Effect.Navigation.ToHomeScreen(event.message)
+                }
             }
 
-            is TaskDetailContract.Event.TitleTextInput -> updateTitle(event.title)
-
-            is TaskDetailContract.Event.DescriptionTextInput -> setState {
-                copy(task = task?.copy(description = event.description))
+            is TaskDetailContract.Event.TitleTextInput -> {
+                val title = event.title
+                if (title.length < 30) {
+                    setState {
+                        copy(task = task?.copy(title = title))
+                    }
+                }
             }
 
-            is TaskDetailContract.Event.PrioritySelection -> setState {
-                copy(task = task?.copy(priority = event.priority))
+            is TaskDetailContract.Event.DescriptionTextInput -> {
+                setState {
+                    copy(task = task?.copy(description = event.description))
+                }
+            }
+
+            is TaskDetailContract.Event.PrioritySelection -> {
+                setState {
+                    copy(task = task?.copy(priority = event.priority))
+                }
             }
         }
     }
@@ -79,14 +100,6 @@ class TaskViewModel @AssistedInject constructor (
             }
         } else {
             setState { copy(isLoading = false, isError = false) }
-        }
-    }
-
-    private fun updateTitle(title: String) {
-        if (title.length < 30) {
-            setState {
-                copy(task = task?.copy(title = title))
-            }
         }
     }
 
