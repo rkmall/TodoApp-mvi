@@ -34,12 +34,11 @@ import androidx.compose.ui.unit.sp
 import com.rm.todocomposemvvm.R
 import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
-import com.rm.todocomposemvvm.ui.component.DialogConstants
 import com.rm.todocomposemvvm.ui.component.DialogConstants.DELETE_ICON_DESCRIPTION
 import com.rm.todocomposemvvm.ui.component.DialogConstants.DELETE_TASK_TEXT
 import com.rm.todocomposemvvm.ui.component.DialogConstants.DELETE_TASK_TITLE
 import com.rm.todocomposemvvm.ui.component.TaskDeletionAlertDialog
-import com.rm.todocomposemvvm.ui.screen.component.Progress
+import com.rm.todocomposemvvm.ui.component.Progress
 import com.rm.todocomposemvvm.ui.screen.task.TaskDetailContract
 import com.rm.todocomposemvvm.ui.theme.PaddingExtraSmall
 import com.rm.todocomposemvvm.ui.theme.PaddingMedium

@@ -10,6 +10,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Singleton
 
 @Module
@@ -18,16 +19,22 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
-        AppDatabase.getInstance(context)
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+        return AppDatabase.getInstance(context)
+    }
 
     @Singleton
     @Provides
-    fun provideTodoTaskDao(database: AppDatabase): TodoTaskDao = database.todoTaskDao()
+    fun provideTodoTaskDao(database: AppDatabase): TodoTaskDao {
+        return database.todoTaskDao()
+    }
 
     @Singleton
     @Provides
-    fun provideTodoTaskRepository(todoTaskDao: TodoTaskDao): TodoTaskRepository {
-        return TodoTaskRepositoryImpl(todoTaskDao)
+    fun provideTodoTaskRepository(
+        todoTaskDao: TodoTaskDao,
+        @IoDispatcher dispatcher: CoroutineDispatcher
+    ): TodoTaskRepository {
+        return TodoTaskRepositoryImpl(todoTaskDao, dispatcher)
     }
 }

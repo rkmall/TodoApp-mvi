@@ -39,7 +39,7 @@ import com.rm.todocomposemvvm.data.room.entity.Priority
 import com.rm.todocomposemvvm.data.room.entity.TodoTask
 import com.rm.todocomposemvvm.ui.component.DialogConstants
 import com.rm.todocomposemvvm.ui.component.TaskDeletionAlertDialog
-import com.rm.todocomposemvvm.ui.screen.component.Progress
+import com.rm.todocomposemvvm.ui.component.Progress
 import com.rm.todocomposemvvm.ui.screen.home.HomeContract
 import com.rm.todocomposemvvm.ui.screen.home.HomeViewModel
 import com.rm.todocomposemvvm.ui.theme.PaddingExtraSmall

@@ -5,9 +5,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface TodoTaskRepository {
 
-    fun getTodoTasks(): Flow<List<TodoTask>>
+    suspend fun getTodoTasks(): Flow<List<TodoTask>>
 
-    fun getSelectedTask(taskId: Int): Flow<TodoTask>
+    suspend fun getSelectedTask(taskId: Int): Flow<TodoTask>
 
     suspend fun insertTodoTask(todoTask: TodoTask)
 
@@ -17,9 +17,9 @@ interface TodoTaskRepository {
 
     suspend fun deleteAllTodoTasks()
 
-    fun searchTodoTask(searchQuery: String): Flow<List<TodoTask>>
+    suspend fun searchTodoTask(searchQuery: String): Flow<List<TodoTask>>
 
-    fun sortByLowPriority(): Flow<List<TodoTask>>
+    suspend fun sortByLowPriority(): Flow<List<TodoTask>>
 
-    fun sortByHighPriority(): Flow<List<TodoTask>>
+    suspend fun sortByHighPriority(): Flow<List<TodoTask>>
 }
